@@ -33,7 +33,8 @@
       "@services": ["src/services"],
       "@states": ["src/states"],
       "@utils": ["src/utils"],
-      "@openapi-spec": ["src/openapi-spec"]
+      "@openapi-spec": ["src/openapi-spec"],
+      "@handlers": ["src/handlers"]
     }
   },
   "include": ["src", "**/*.ts", "**/*.tsx", "**/*.js", "*.cjs"],

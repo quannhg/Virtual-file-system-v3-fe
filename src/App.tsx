@@ -1,9 +1,9 @@
-import { Typography } from '@material-tailwind/react';
+import { Terminal } from '@components';
 
 function App() {
   return (
-    <div>
-      <Typography variant='h1'>Hello world</Typography>
+    <div className='h-screen'>
+      <Terminal />
     </div>
   );
 }

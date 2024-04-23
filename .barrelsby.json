@@ -8,7 +8,8 @@
     "./src/states",
     "./src/utils",
     "./src/hooks",
-    "./src/services"
+    "./src/services",
+    "./src/handlers"
   ],
   "delete": true
 }
