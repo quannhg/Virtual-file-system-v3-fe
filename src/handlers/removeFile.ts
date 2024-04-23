@@ -1,3 +1,6 @@
+import { readPwdLocalStorage } from '@utils';
+
 export const removeFile = (fileName: string): string => {
-  return 'remove ' + fileName;
+  const removedFileName = readPwdLocalStorage() + '/' + fileName;
+  return 'remove ' + removedFileName;
 };

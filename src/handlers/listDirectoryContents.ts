@@ -1,3 +1,6 @@
+import { readPwdLocalStorage } from '@utils';
+
 export const listDirectoryContents = (): string => {
-  return 'ls is called';
+  const currentDirectory = readPwdLocalStorage();
+  return 'ls is called at ' + currentDirectory;
 };
