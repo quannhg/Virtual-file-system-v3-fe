@@ -1,13 +1,20 @@
-import { FileSystem } from "@interfaces";
+import { FileSystem } from '@interfaces';
+import { create } from 'zustand';
 
-export const fileSystem: FileSystem = {
+// Define interface for file system
+interface FileSystemState {
+  fileSystem: FileSystem;
+  updateFileSystem: (newFileSystem: FileSystem) => void;
+}
+
+const initialFileSystem: FileSystem = {
   '/': {
     type: 'dir',
     children: {
       home: {
         type: 'dir',
         children: {
-          jackharper: {
+          mihon: {
             type: 'dir',
             children: {
               documents: {
@@ -24,3 +31,8 @@ export const fileSystem: FileSystem = {
     }
   }
 };
+
+export const useFileSystemStore = create<FileSystemState>((set) => ({
+  fileSystem: initialFileSystem,
+  updateFileSystem: (newFileSystem) => set({ fileSystem: newFileSystem })
+}));

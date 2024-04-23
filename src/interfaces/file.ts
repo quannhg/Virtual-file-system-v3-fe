@@ -11,7 +11,3 @@ export interface Directory {
 export interface FileSystem {
   [path: string]: Directory;
 }
-
-export interface CommandState {
-  cwd: string;
-}

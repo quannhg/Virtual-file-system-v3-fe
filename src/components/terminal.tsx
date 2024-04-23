@@ -1,38 +1,38 @@
 import {
   changeDirectory,
+  createFile,
   listDirectoryContents,
   makeDirectory,
-  createFile,
   removeFile
 } from '@handlers';
-import { CommandState } from '@interfaces';
 import { ReactTerminal } from 'react-terminal';
 
 export const Terminal = () => {
-  const commands: {
-    [name: string]: (arg: string, currentState: CommandState) => string | CommandState;
-  } = {
-    hcm: () => 'co em',
-    cd: (directory: string, currentState: CommandState) => changeDirectory(directory, currentState),
-    ls: (args: string, currentState: CommandState) => listDirectoryContents(currentState),
-    mkdir: (directoryName: string, currentState: CommandState) =>
-      makeDirectory(directoryName, currentState),
-    touch: (fileName: string, currentState: CommandState) => createFile(fileName, currentState),
-    rm: (fileName: string, currentState: CommandState) => removeFile(fileName, currentState),
-    pwd: (args: string, currentState: CommandState) => currentState
+  const welcomeMessage = (
+    <span>
+      Welcome to <strong>Virtual file system!</strong> Type <strong>help</strong> for all available
+      commands
+      <br />
+      <br />
+    </span>
+  );
+
+  const commands: Commands = {
+    cd: (directory: string) => changeDirectory(directory),
+    ls: () => listDirectoryContents(),
+    mkdir: (directoryName: string) => makeDirectory(directoryName),
+    touch: (fileName: string) => createFile(fileName),
+    rm: (fileName: string) => removeFile(fileName),
+    pwd: () => 'current directory'
   };
-  const initialCommandState: CommandState = { cwd: '/' };
 
   return (
     <ReactTerminal
       className='h-max'
       commands={commands}
-      theme='dark'
-      prompt={`mihon@root:~$`}
-      welcomeMessage={
-        <div>Welcome to Virtual file system! Type "help" for all available commands</div>
-      }
-      initialCommandState={initialCommandState}
+      prompt={'$'}
+      welcomeMessage={welcomeMessage}
+      errorMessage={<span className='text-red-500'>Command not found</span>}
     />
   );
 };
