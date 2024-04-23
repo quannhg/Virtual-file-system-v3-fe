@@ -1,13 +1,22 @@
 import {
-  changeDirectory,
-  createFile,
-  listDirectoryContents,
-  makeDirectory,
-  removeFile
+  useChangeDirectory,
+  useCreateFile,
+  useListDirectoryContents,
+  useMakeDirectory,
+  useRemoveFile
 } from '@handlers';
+import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
 
 export const Terminal = () => {
+  const { pwd } = usePwdStore();
+
+  const changeDirectory = useChangeDirectory();
+  const listDirectoryContents = useListDirectoryContents();
+  const makeDirectory = useMakeDirectory();
+  const createFile = useCreateFile();
+  const removeFile = useRemoveFile();
+
   const welcomeMessage = (
     <span>
       Welcome to <strong>Virtual file system!</strong> Type <strong>help</strong> for all available
@@ -30,7 +39,7 @@ export const Terminal = () => {
     <ReactTerminal
       className='h-max'
       commands={commands}
-      prompt={'$'}
+      prompt={'$' + pwd}
       welcomeMessage={welcomeMessage}
       errorMessage={<span className='text-red-500'>Command not found</span>}
     />

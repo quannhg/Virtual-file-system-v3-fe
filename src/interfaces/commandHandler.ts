@@ -1,3 +1,3 @@
 export interface CommandHandler {
-  (...args: string[]): string;
+  (...args: string[]): string | void;
 }
