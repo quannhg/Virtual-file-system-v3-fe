@@ -5,7 +5,6 @@
     "./src/interfaces",
     "./src/states",
     "./src/utils",
-    "./src/hooks",
     "./src/services",
     "./src/handlers"
   ],

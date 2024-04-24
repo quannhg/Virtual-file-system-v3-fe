@@ -3,7 +3,6 @@
  */
 
 export * from './useChangeDirectory';
-export * from './useCreateFile';
 export * from './useListDirectoryContents';
 export * from './useMakeDirectory';
 export * from './useRemoveFile';

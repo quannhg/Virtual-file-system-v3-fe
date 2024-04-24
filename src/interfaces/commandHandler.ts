@@ -1,3 +1,3 @@
 export interface CommandHandler {
-  (...args: string[]): string | void;
+  (...args: string[]): Promise<string | void>;
 }

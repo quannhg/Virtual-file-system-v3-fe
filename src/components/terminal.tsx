@@ -1,8 +1,7 @@
 import {
   useChangeDirectory,
-  useCreateFile,
   useListDirectoryContents,
-  useMakeDirectory,
+  useCreateFileOrDirectory,
   useRemoveFile
 } from '@handlers';
 import { usePwdStore } from '@states';
@@ -13,8 +12,7 @@ export const Terminal = () => {
 
   const changeDirectory = useChangeDirectory();
   const listDirectoryContents = useListDirectoryContents();
-  const makeDirectory = useMakeDirectory();
-  const createFile = useCreateFile();
+  const createFileOrDirectory = useCreateFileOrDirectory();
   const removeFile = useRemoveFile();
 
   const welcomeMessage = (
@@ -28,9 +26,8 @@ export const Terminal = () => {
 
   const commands: Commands = {
     cd: async (directory: string) => await changeDirectory(directory),
+    cr: (argumentsString: string) => createFileOrDirectory(argumentsString),
     ls: () => listDirectoryContents(),
-    mkdir: (directoryName: string) => makeDirectory(directoryName),
-    touch: (fileName: string) => createFile(fileName),
     rm: (fileName: string) => removeFile(fileName),
     pwd: () => 'current directory'
   };
