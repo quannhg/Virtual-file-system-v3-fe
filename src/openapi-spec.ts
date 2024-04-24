@@ -52,7 +52,7 @@ export type paths = {
           content: {
             "application/json": {
               /** @default Successfully create file/directory */
-              message: string;
+              content: string;
             };
           };
         };
@@ -60,6 +60,35 @@ export type paths = {
         400: {
           content: {
             "application/json": {
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/cat": {
+    /** Retrieve content of the file */
+    get: {
+      parameters: {
+        query: {
+          path: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              data: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No file found with the provided path! */
               message: string;
             };
           };

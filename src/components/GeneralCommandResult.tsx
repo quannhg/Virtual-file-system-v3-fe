@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const CommandResult: React.FC<{ result?: string | void; error?: string }> = ({
+export const GeneralCommandResult: React.FC<{ result?: string | void; error?: string }> = ({
   result,
   error
 }) => {

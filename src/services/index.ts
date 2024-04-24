@@ -5,3 +5,4 @@
 export * from './changeDirectory';
 export * from './common';
 export * from './createFileDirectory';
+export * from './showFileContent';
