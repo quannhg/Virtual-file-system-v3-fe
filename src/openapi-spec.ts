@@ -35,6 +35,38 @@ export type paths = {
       };
     };
   };
+  "/api/cr": {
+    /** Create new file or directory */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            path: string;
+            data: string | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              /** @default Successfully create file/directory */
+              message: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
 };
 
 export type webhooks = Record<string, never>;

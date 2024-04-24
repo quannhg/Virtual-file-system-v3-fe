@@ -1,6 +1,7 @@
+import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
 
-export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<string>) => {
+export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
 
   return async (argumentString: string) => {
@@ -20,11 +21,7 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
 
       const newPath = currentDirectory + '/' + path;
 
-      if (data) {
-        return `create file "${newPath}" with data: "${data}"`;
-      } else {
-        return `create directory "${newPath}"`;
-      }
+      await createFileDirectory(newPath, data);
     } catch (err) {
       throw err;
     }
@@ -39,11 +36,17 @@ const parseArguments = (argumentString: string) => {
   }
 
   const createParents = args[0] === '-p';
-  
+
   const pathIndex = createParents ? 1 : 0;
-  let path = args[pathIndex];
+  let path = args[pathIndex] || '';
   if (path && path.startsWith('"') && path.endsWith('"')) {
     path = path.slice(1, -1);
+  }
+
+  path = path.replace(/^\/+|\/+$/g, '');
+
+  if (path.includes('//')) {
+    throw Error(`Invalid path: ${path}. Consecutive slash characters are not allowed.`);
   }
 
   const minimumLen = createParents ? 2 : 1;

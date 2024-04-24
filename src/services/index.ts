@@ -4,3 +4,4 @@
 
 export * from './changeDirectory';
 export * from './common';
+export * from './createFileDirectory';

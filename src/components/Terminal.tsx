@@ -39,8 +39,7 @@ export const Terminal = () => {
 
   const cr = async (argumentsString: string) => {
     try {
-      const information = await createFileOrDirectory(argumentsString);
-      return <CommandResult result={information} />;
+      await createFileOrDirectory(argumentsString);
     } catch (err) {
       if (err instanceof Error && err.message) {
         return <CommandResult error={err.message} />;

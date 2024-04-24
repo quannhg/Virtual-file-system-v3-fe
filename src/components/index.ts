@@ -3,4 +3,4 @@
  */
 
 export * from './CommandResult';
-export * from './terminal';
+export * from './Terminal';
