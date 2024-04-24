@@ -7,6 +7,13 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
     try {
       const { path, data, createParents } = parseArguments(argumentString);
 
+      const isValidPath = /^[a-zA-Z0-9 _/-]+$/.test(path || '');
+      if (!isValidPath) {
+        throw Error(
+          `Invalid characters in path. Path can only contain alphanumeric characters, spaces, underscores, hyphens, and slashes.`
+        );
+      }
+
       if (!createParents && path && path.includes('/')) {
         throw new Error(`Cannot create parent directory! Add '-p' to create parent directory.`);
       }
@@ -32,8 +39,12 @@ const parseArguments = (argumentString: string) => {
   }
 
   const createParents = args[0] === '-p';
+  
   const pathIndex = createParents ? 1 : 0;
-  const path = args[pathIndex];
+  let path = args[pathIndex];
+  if (path && path.startsWith('"') && path.endsWith('"')) {
+    path = path.slice(1, -1);
+  }
 
   const minimumLen = createParents ? 2 : 1;
 
