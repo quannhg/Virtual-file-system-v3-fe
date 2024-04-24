@@ -1,7 +1,7 @@
 import { usePwdStore } from '@states';
 
 export const useMakeDirectory = (): ((directoryName: string) => string) => {
-  const { pwd } = usePwdStore();
+  const { currentDirectory: pwd } = usePwdStore();
 
   return (directoryName: string) => {
     const newDirectory = pwd + '/' + directoryName;

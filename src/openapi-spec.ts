@@ -5,14 +5,12 @@
 
 
 export type paths = {
-  "/auth/login": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            usernameOrEmail: string;
-            password: string;
-          };
+  "/api/cd": {
+    /** Change current directory */
+    get: {
+      parameters: {
+        query: {
+          path: string;
         };
       };
       responses: {
@@ -20,51 +18,19 @@ export type paths = {
         200: {
           content: {
             "application/json": {
-              /** @description User ID */
-              id: string;
-              email: string | null;
-              username: string;
+              /** @default Successfully change directory */
+              message: string;
             };
           };
         };
-      };
-    };
-  };
-  "/auth/signup": {
-    post: {
-      requestBody: {
-        content: {
-          "application/json": {
-            /** Format: email */
-            email?: string;
-            username: string;
-            password: string;
-            firstName: string;
-            lastName: string;
-          };
-        };
-      };
-      responses: {
         /** @description Default Response */
-        200: {
+        400: {
           content: {
             "application/json": {
-              /** @description User ID */
-              id: string;
-              email: string | null;
-              username: string;
+              /** @default No directory found with the provided path! */
+              message: string;
             };
           };
-        };
-      };
-    };
-  };
-  "/auth/logout": {
-    delete: {
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: never;
         };
       };
     };

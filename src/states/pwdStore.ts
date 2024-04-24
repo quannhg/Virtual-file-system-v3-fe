@@ -1,22 +1,31 @@
+import { changeDirectory } from '@services';
 import { readPwdLocalStorage, updatePwdLocalStorage } from '@utils';
 import { create } from 'zustand';
 
-// Define interface for PWD state
 interface PwdState {
-  pwd: string;
-  updatePwdLocalStorage: (newPwd: string) => void;
-  readPwdLocalStorage: () => string;
+  currentDirectory: string;
+  updatePwd: (newPwd: string) => Promise<void | string>;
 }
 
 const initialPwd = readPwdLocalStorage();
 
 export const usePwdStore = create<PwdState>((set) => ({
-  pwd: initialPwd,
-  updatePwdLocalStorage: (newPwd) => {
-    updatePwdLocalStorage(newPwd);
-    set({ pwd: newPwd });
-  },
-  readPwdLocalStorage: () => {
-    return readPwdLocalStorage();
+  currentDirectory: initialPwd,
+  updatePwd: async (newPwd) => {
+    try {
+      if (newPwd) {
+        await changeDirectory(newPwd);
+      }
+      
+
+      updatePwdLocalStorage(newPwd);
+      set({ currentDirectory: newPwd });
+    } catch (err) {
+      if (err instanceof Error && err.message) {
+        return err.message;
+      } else {
+        return 'An error occurred while updating the directory.';
+      }
+    }
   }
 }));

@@ -3,8 +3,6 @@
     "./src/constants",
     "./src/components",
     "./src/interfaces",
-    "./src/layouts",
-    "./src/pages",
     "./src/states",
     "./src/utils",
     "./src/hooks",

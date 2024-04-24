@@ -9,7 +9,7 @@ import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
 
 export const Terminal = () => {
-  const { pwd } = usePwdStore();
+  const { currentDirectory } = usePwdStore();
 
   const changeDirectory = useChangeDirectory();
   const listDirectoryContents = useListDirectoryContents();
@@ -27,7 +27,7 @@ export const Terminal = () => {
   );
 
   const commands: Commands = {
-    cd: (directory: string) => changeDirectory(directory),
+    cd: async (directory: string) => await changeDirectory(directory),
     ls: () => listDirectoryContents(),
     mkdir: (directoryName: string) => makeDirectory(directoryName),
     touch: (fileName: string) => createFile(fileName),
@@ -39,7 +39,7 @@ export const Terminal = () => {
     <ReactTerminal
       className='h-max'
       commands={commands}
-      prompt={'$' + pwd}
+      prompt={'$' + currentDirectory}
       welcomeMessage={welcomeMessage}
       errorMessage={<span className='text-red-500'>Command not found</span>}
     />

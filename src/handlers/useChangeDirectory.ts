@@ -1,27 +1,33 @@
 import { usePwdStore } from '@states';
 
-export const useChangeDirectory = (): ((directory: string) => void) => {
-  const { updatePwdLocalStorage, readPwdLocalStorage } = usePwdStore();
+export const useChangeDirectory = (): ((directory: string) => Promise<void | string>) => {
+  const { updatePwd, currentDirectory } = usePwdStore();
 
-  return (directory: string) => {
-    let currentDirectory = readPwdLocalStorage();
+  return async (directory: string) => {
+    let updatedDirectory = currentDirectory;
 
     const parts = directory.split('/');
 
     for (const part of parts) {
       if (part === '..') {
-        const splitPath = currentDirectory.split('/');
+        const splitPath = updatedDirectory.split('/');
         if (splitPath.length > 1) {
           splitPath.pop();
-          currentDirectory = splitPath.join('/') || '';
+          updatedDirectory = splitPath.join('/') || '';
         }
       } else if (part === '--') {
-        currentDirectory = '';
+        updatedDirectory = '';
       } else {
-        currentDirectory += '/' + part;
+        updatedDirectory += '/' + part;
       }
     }
 
-    updatePwdLocalStorage(currentDirectory);
+    const errorMessage = await updatePwd(updatedDirectory);
+
+    if (errorMessage) {
+      return errorMessage;
+    } else {
+      return;
+    }
   };
 };
