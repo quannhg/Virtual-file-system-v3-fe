@@ -6,3 +6,4 @@ export * from './useChangeDirectory';
 export * from './useListDirectoryContents';
 export * from './useMakeDirectory';
 export * from './useRemoveFile';
+export * from './useShowContentOfFile';
