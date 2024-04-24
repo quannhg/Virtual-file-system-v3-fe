@@ -19,11 +19,7 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
         return `create directory "${newPath}"`;
       }
     } catch (err) {
-      if (err instanceof Error && err.message) {
-        return err.message;
-      } else {
-        return 'An error occurred while create new file/directory.';
-      }
+      throw err;
     }
   };
 };

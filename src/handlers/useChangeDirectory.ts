@@ -1,6 +1,6 @@
 import { usePwdStore } from '@states';
 
-export const useChangeDirectory = (): ((directory: string) => Promise<void | string>) => {
+export const useChangeDirectory = (): ((directory: string) => Promise<void>) => {
   const { updatePwd, currentDirectory } = usePwdStore();
 
   return async (directory: string) => {
@@ -21,13 +21,10 @@ export const useChangeDirectory = (): ((directory: string) => Promise<void | str
         updatedDirectory += '/' + part;
       }
     }
-
-    const errorMessage = await updatePwd(updatedDirectory);
-
-    if (errorMessage) {
-      return errorMessage;
-    } else {
-      return;
+    try {
+      await updatePwd(updatedDirectory);
+    } catch (err) {
+      throw err;
     }
   };
 };

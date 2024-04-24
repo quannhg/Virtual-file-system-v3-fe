@@ -16,16 +16,11 @@ export const usePwdStore = create<PwdState>((set) => ({
       if (newPwd) {
         await changeDirectory(newPwd);
       }
-      
 
       updatePwdLocalStorage(newPwd);
       set({ currentDirectory: newPwd });
     } catch (err) {
-      if (err instanceof Error && err.message) {
-        return err.message;
-      } else {
-        return 'An error occurred while updating the directory.';
-      }
+      throw err;
     }
   }
 }));

@@ -6,6 +6,7 @@ import {
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
+import { CommandResult } from './CommandResult';
 
 export const Terminal = () => {
   const { currentDirectory } = usePwdStore();
@@ -24,9 +25,34 @@ export const Terminal = () => {
     </span>
   );
 
+  const cd = async (directory: string) => {
+    try {
+      await changeDirectory(directory);
+    } catch (err) {
+      if (err instanceof Error && err.message) {
+        return <CommandResult error={err.message} />;
+      } else {
+        return <CommandResult error='An error occurred while creating a new file/directory.' />;
+      }
+    }
+  };
+
+  const cr = async (argumentsString: string) => {
+    try {
+      const information = await createFileOrDirectory(argumentsString);
+      return <CommandResult result={information} />;
+    } catch (err) {
+      if (err instanceof Error && err.message) {
+        return <CommandResult error={err.message} />;
+      } else {
+        return <CommandResult error='An error occurred while creating a new file/directory.' />;
+      }
+    }
+  };
+
   const commands: Commands = {
-    cd: async (directory: string) => await changeDirectory(directory),
-    cr: (argumentsString: string) => createFileOrDirectory(argumentsString),
+    cd,
+    cr,
     ls: () => listDirectoryContents(),
     rm: (fileName: string) => removeFile(fileName),
     pwd: () => 'current directory'
