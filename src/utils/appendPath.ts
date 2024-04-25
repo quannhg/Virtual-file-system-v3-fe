@@ -1,6 +1,10 @@
-export const appendPath = (oldPath: string, appendedPath: string): string => {
+import path from 'path';
+
+export const appendPath = (currentPath: string, appendedPath: string): string => {
+  if (appendedPath === '/' || appendedPath === '') return currentPath;
+
   const parts = appendedPath.replace(/^\/+|\/+$/g, '').split('/');
-  let resultPath = oldPath;
+  let resultPath = path.join(currentPath);
 
   for (const part of parts) {
     if (part === '..') {
@@ -12,10 +16,9 @@ export const appendPath = (oldPath: string, appendedPath: string): string => {
     } else if (part === '--') {
       resultPath = '';
     } else {
-      resultPath += '/' + part;
+      resultPath = path.join(resultPath, part);
     }
   }
 
-  console.log(resultPath);
   return resultPath;
 };
