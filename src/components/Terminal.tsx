@@ -1,6 +1,6 @@
 import {
   useChangeDirectory,
-  useListDirectoryContents,
+  useListDirectoryItems,
   useCreateFileOrDirectory,
   useRemoveFile,
   useShowFileContent,
@@ -9,6 +9,7 @@ import {
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
 import { GeneralCommandResult } from './GeneralCommandResult';
+import { ListDirectoryCommandResult } from './ListDirectoryItems';
 
 const handleCommandError = (err: Error | unknown) => {
   if (err instanceof Error && err.message) {
@@ -39,7 +40,7 @@ export const Terminal = () => {
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
   const updateFileDirectory = useUpdateFileOrDirectory();
-  const listDirectoryContents = useListDirectoryContents();
+  const listDirectoryItems = useListDirectoryItems();
   const removeFile = useRemoveFile();
 
   const welcomeMessage = (
@@ -50,6 +51,15 @@ export const Terminal = () => {
       <br />
     </span>
   );
+
+  const ls = async (directory: string) => {
+    try {
+      const directoryItems = await listDirectoryItems(directory);
+      return <ListDirectoryCommandResult result={directoryItems} />;
+    } catch (err) {
+      return handleCommandError(err);
+    }
+  };
 
   const commands: Commands = {
     cd: async (directory: string) => {
@@ -64,7 +74,7 @@ export const Terminal = () => {
     up: async (argumentsString: string) => {
       return await executeCommand(updateFileDirectory, argumentsString);
     },
-    ls: () => listDirectoryContents(),
+    ls,
     rm: (fileName: string) => removeFile(fileName),
     pwd: () => 'current directory'
   };

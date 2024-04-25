@@ -4,7 +4,7 @@
 
 export * from './useChangeDirectory';
 export * from './useCreateFileDirectory';
-export * from './useListDirectoryContents';
+export * from './useListDirectoryItems';
 export * from './useRemoveFile';
 export * from './useShowFileContent';
 export * from './useUpdateFileDirectory';

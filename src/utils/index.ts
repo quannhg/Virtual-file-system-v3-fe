@@ -4,5 +4,6 @@
 
 export * from './appendPath';
 export * from './cleanArgument';
+export * from './formatCreateTime';
 export * from './pwd';
 export * from './validatePath';

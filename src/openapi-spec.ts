@@ -108,7 +108,11 @@ export type paths = {
         /** @description Default Response */
         200: {
           content: {
-            "application/json": unknown[];
+            "application/json": {
+                name: string;
+                createAt: string;
+                size: number;
+              }[];
           };
         };
         /** @description Default Response */

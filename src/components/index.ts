@@ -3,4 +3,5 @@
  */
 
 export * from './GeneralCommandResult';
+export * from './ListDirectoryItems';
 export * from './Terminal';

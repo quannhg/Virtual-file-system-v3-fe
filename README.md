@@ -9,9 +9,9 @@
         ~~2. else, raise error~~
     ~~2. if there is an existing file/folder at `PATH`, raise error~~
 ~~3. `cat FILE_PATH`: show the content of a file at `FILE_PATH`. If there is no file at `FILE_PATH`, raise error.~~
-4. `ls [FOLDER_PATH]`: list out all items **directly under** a folder
-    1. the output list must include name, created_at, and size of each item **directly under** the current folder, and of the current folder itself. Size of a folder is the total size of all files within the folder. Size of a file is the number of characters in its data.
-        1. if the optional param `FOLDER_PATH` is specified, list items in the folder at `FOLDER_PATH`. Otherwise if omitted, list items in the current working folder
+~~4. `ls [FOLDER_PATH]`: list out all items **directly under** a folder~~
+    ~~1. the output list must include name, created_at, and size of each item **directly under** the current folder, and of the current folder itself. Size of a folder is the total size of all files within the folder. Size of a file is the number of characters in its data.~~
+        ~~1. if the optional param `FOLDER_PATH` is specified, list items in the folder at `FOLDER_PATH`. Otherwise if omitted, list items in the current working folder~~
 5. `find NAME [FOLDER_PATH]`: search all files/folders whose name **contains** the substring `NAME`. If the optional param `FOLDER_PATH` is specified, find in the folder at `FOLDER_PATH`. Otherwise if omitted, find in the current working folder. Note:
     1. the command should find in subfolders as well
     2. the result should be displayed nicely to end users
