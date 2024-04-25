@@ -4,5 +4,7 @@
 
 export * from './CommandError';
 export * from './GeneralCommandResult';
+export * from './HelpCommand';
+export * from './HelpForSpecificCommand';
 export * from './ListDirectoryItems';
 export * from './Terminal';

@@ -12,12 +12,18 @@ import { ReactTerminal } from 'react-terminal';
 import { GeneralCommandResult } from './GeneralCommandResult';
 import { ListDirectoryCommandResult } from './ListDirectoryItems';
 import { CommandError } from './CommandError';
+import { HelpCommand } from './HelpCommand';
+import { HelpForSpecificCommand } from './HelpForSpecificCommand';
 
 const executeCommand = async (
   commandFunction: (argumentsString: string) => Promise<void | string>,
-  argumentsString: string
+  argumentsString: string,
+  commandName?: string
 ) => {
   try {
+    if (commandName && (argumentsString === '--help' || argumentsString === '-h'))
+      return <HelpForSpecificCommand command={commandName} />;
+
     const result = await commandFunction(argumentsString);
     if (typeof result === 'string') {
       return <GeneralCommandResult result={result} />;
@@ -49,6 +55,9 @@ export const Terminal = () => {
 
   const ls = async (directory: string) => {
     try {
+      if (directory === '--help' || directory === '-h')
+        return <HelpForSpecificCommand command={'ls'} />;
+
       const directoryItems = await listDirectoryItems(directory);
       return <ListDirectoryCommandResult result={directoryItems} />;
     } catch (err) {
@@ -58,23 +67,27 @@ export const Terminal = () => {
 
   const commands: Commands = {
     cd: async (directory: string) => {
-      return await executeCommand(changeDirectory, directory);
+      return await executeCommand(changeDirectory, directory, 'cd');
     },
     cr: async (argumentsString: string) => {
-      return await executeCommand(createFileOrDirectory, argumentsString);
+      return await executeCommand(createFileOrDirectory, argumentsString, 'cr');
     },
     cat: async (filePath: string) => {
-      return await executeCommand(showFileContent, filePath);
+      return await executeCommand(showFileContent, filePath, 'cat');
     },
     up: async (argumentsString: string) => {
-      return await executeCommand(updateFileDirectory, argumentsString);
+      return await executeCommand(updateFileDirectory, argumentsString, 'up');
     },
     ls,
     mv: async (argumentsString: string) => {
-      return await executeCommand(moveFileDirectory, argumentsString);
+      return await executeCommand(moveFileDirectory, argumentsString, 'mv');
     },
     rm: async (paths: string) => {
-      return await executeCommand(removeFileDirectory, paths);
+      return await executeCommand(removeFileDirectory, paths, 'rm');
+    },
+    help: (argumentsString?: string) => {
+      if (argumentsString) return <CommandError error={Error('Invalid arguments')} />;
+      return <HelpCommand />;
     }
   };
 
