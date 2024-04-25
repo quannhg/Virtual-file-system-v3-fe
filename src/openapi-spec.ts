@@ -96,6 +96,67 @@ export type paths = {
       };
     };
   };
+  "/api/ls": {
+    /** List all items in directory */
+    get: {
+      parameters: {
+        query: {
+          path: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": unknown[];
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No directory found with the provided path! */
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/up": {
+    /** Update file or directory */
+    post: {
+      requestBody: {
+        content: {
+          "application/json": {
+            oldPath: string;
+            newPath: string;
+            newData: string | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              /** @default Successfully change directory */
+              message: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No directory found with the provided path! */
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
 };
 
 export type webhooks = Record<string, never>;

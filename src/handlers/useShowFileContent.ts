@@ -1,7 +1,7 @@
 import { PATH_IS_REQUIRED } from '@constants';
 import { usePwdStore } from '@states';
 import { appendPath } from '@utils';
-import { showFileContent } from 'src/services/showFileContent';
+import { showFileContent } from '@services';
 
 export const useShowFileContent = (): ((filePath: string) => Promise<string>) => {
   const { currentDirectory } = usePwdStore();

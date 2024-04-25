@@ -1,6 +1,6 @@
 import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { appendPath } from '@utils';
+import { appendPath, cleanArgument, validatePath } from '@utils';
 
 export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -8,13 +8,6 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
   return async (argumentString: string) => {
     try {
       const { path, data, createParents } = parseArguments(argumentString);
-
-      const isValidPath = /^[a-zA-Z0-9 _/-]+$/.test(path || '');
-      if (!isValidPath) {
-        throw Error(
-          `Invalid characters in path. Path can only contain alphanumeric characters, spaces, underscores, hyphens, and slashes.`
-        );
-      }
 
       if (!createParents && path && path.includes('/')) {
         throw new Error(`Cannot create parent directory! Add '-p' to create parent directory.`);
@@ -39,14 +32,8 @@ const parseArguments = (argumentString: string) => {
   const createParents = args[0] === '-p';
 
   const pathIndex = createParents ? 1 : 0;
-  let path = args[pathIndex] || '';
-  if (path && path.startsWith('"') && path.endsWith('"')) {
-    path = path.slice(1, -1);
-  }
-
-  if (path.includes('//')) {
-    throw Error(`Invalid path: ${path}. Consecutive slash characters are not allowed.`);
-  }
+  const path = cleanArgument(args[pathIndex] || '');
+  validatePath(path);
 
   const minimumLen = createParents ? 2 : 1;
 
@@ -60,11 +47,7 @@ const parseArguments = (argumentString: string) => {
 
   let data = null;
   if (args.length === minimumLen + 1) {
-    data = args[minimumLen];
-
-    if (data && data.startsWith('"') && data.endsWith('"')) {
-      data = data.slice(1, -1);
-    }
+    data = cleanArgument(args[minimumLen] || '');
   }
 
   return { path, data, createParents };
