@@ -22,8 +22,8 @@
 
 ~~6. `up PATH NAME [DATA]` update the file/folder at `PATH` to have new `NAME` and, optionally, new `DATA`~~
 
-7. `mv PATH FOLDER_PATH` move a file/folder at `PATH` **into** the destination `FOLDER_PATH`. Raise error if:
-    1. there is no Folder at `FOLDER_PATH`
-    2. `FOLDER_PATH` is sub-path of `PATH`. In other words, cannot move a folder to become a subfolder of itself
+~~7. `mv PATH FOLDER_PATH` move a file/folder at `PATH` **into** the destination `FOLDER_PATH`. Raise error if:~~
+    ~~1. there is no Folder at `FOLDER_PATH`~~
+    ~~2. `FOLDER_PATH` is sub-path of `PATH`. In other words, cannot move a folder to become a subfolder of itself~~
 
 ~~8. `rm PATH [PATH2 PATH3...]`: remove files/folders at the specified `PATH`(s)~~

@@ -4,7 +4,8 @@ import {
   useCreateFileOrDirectory,
   useRemoveFileDirectory,
   useShowFileContent,
-  useUpdateFileOrDirectory
+  useUpdateFileOrDirectory,
+  useMoveFileDirectory
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
@@ -32,8 +33,9 @@ export const Terminal = () => {
   const changeDirectory = useChangeDirectory();
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
-  const updateFileDirectory = useUpdateFileOrDirectory();
   const listDirectoryItems = useListDirectoryItems();
+  const updateFileDirectory = useUpdateFileOrDirectory();
+  const moveFileDirectory = useMoveFileDirectory();
   const removeFileDirectory = useRemoveFileDirectory();
 
   const welcomeMessage = (
@@ -68,10 +70,12 @@ export const Terminal = () => {
       return await executeCommand(updateFileDirectory, argumentsString);
     },
     ls,
+    mv: async (argumentsString: string) => {
+      return await executeCommand(moveFileDirectory, argumentsString);
+    },
     rm: async (paths: string) => {
       return await executeCommand(removeFileDirectory, paths);
-    },
-    pwd: () => 'current directory'
+    }
   };
 
   return (

@@ -161,12 +161,15 @@ export type paths = {
       };
     };
   };
-  "/api/rm": {
-    /** Remove files or directories */
-    delete: {
-      parameters: {
-        query: {
-          paths: string[];
+  "/api/mv": {
+    /** Move files or directories */
+    put: {
+      requestBody: {
+        content: {
+          "application/json": {
+            oldPath: string;
+            destinationPath: string;
+          };
         };
       };
       responses: {
@@ -191,9 +194,9 @@ export type paths = {
       };
     };
   };
-  "/api/mv": {
+  "/api/rm": {
     /** Remove files or directories */
-    put: {
+    delete: {
       parameters: {
         query: {
           paths: string[];
