@@ -161,6 +161,36 @@ export type paths = {
       };
     };
   };
+  "/api/rm": {
+    /** Remove files or directories */
+    delete: {
+      parameters: {
+        query: {
+          paths: string[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              /** @default Successfully change directory */
+              message: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No directory found with the provided path! */
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
 };
 
 export type webhooks = Record<string, never>;

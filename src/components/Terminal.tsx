@@ -2,7 +2,7 @@ import {
   useChangeDirectory,
   useListDirectoryItems,
   useCreateFileOrDirectory,
-  useRemoveFile,
+  useRemoveFileDirectory,
   useShowFileContent,
   useUpdateFileOrDirectory
 } from '@handlers';
@@ -10,14 +10,7 @@ import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
 import { GeneralCommandResult } from './GeneralCommandResult';
 import { ListDirectoryCommandResult } from './ListDirectoryItems';
-
-const handleCommandError = (err: Error | unknown) => {
-  if (err instanceof Error && err.message) {
-    return <GeneralCommandResult error={err.message} />;
-  } else {
-    return <GeneralCommandResult error='An error occurred while executing the command.' />;
-  }
-};
+import { CommandError } from './CommandError';
 
 const executeCommand = async (
   commandFunction: (argumentsString: string) => Promise<void | string>,
@@ -29,7 +22,7 @@ const executeCommand = async (
       return <GeneralCommandResult result={result} />;
     }
   } catch (err) {
-    return handleCommandError(err);
+    return <CommandError error={err} />;
   }
 };
 
@@ -41,7 +34,7 @@ export const Terminal = () => {
   const showFileContent = useShowFileContent();
   const updateFileDirectory = useUpdateFileOrDirectory();
   const listDirectoryItems = useListDirectoryItems();
-  const removeFile = useRemoveFile();
+  const removeFileDirectory = useRemoveFileDirectory();
 
   const welcomeMessage = (
     <span>
@@ -57,7 +50,7 @@ export const Terminal = () => {
       const directoryItems = await listDirectoryItems(directory);
       return <ListDirectoryCommandResult result={directoryItems} />;
     } catch (err) {
-      return handleCommandError(err);
+      return <CommandError error={err} />;
     }
   };
 
@@ -75,7 +68,9 @@ export const Terminal = () => {
       return await executeCommand(updateFileDirectory, argumentsString);
     },
     ls,
-    rm: (fileName: string) => removeFile(fileName),
+    rm: async (paths: string) => {
+      return await executeCommand(removeFileDirectory, paths);
+    },
     pwd: () => 'current directory'
   };
 
