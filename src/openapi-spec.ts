@@ -129,7 +129,7 @@ export type paths = {
   };
   "/api/up": {
     /** Update file or directory */
-    post: {
+    put: {
       requestBody: {
         content: {
           "application/json": {
@@ -164,6 +164,36 @@ export type paths = {
   "/api/rm": {
     /** Remove files or directories */
     delete: {
+      parameters: {
+        query: {
+          paths: string[];
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              /** @default Successfully change directory */
+              message: string;
+            };
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No directory found with the provided path! */
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
+  "/api/mv": {
+    /** Remove files or directories */
+    put: {
       parameters: {
         query: {
           paths: string[];
