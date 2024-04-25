@@ -3,11 +3,34 @@ import {
   useListDirectoryContents,
   useCreateFileOrDirectory,
   useRemoveFile,
-  useShowFileContent
+  useShowFileContent,
+  useUpdateFileOrDirectory
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
 import { GeneralCommandResult } from './GeneralCommandResult';
+
+const handleCommandError = (err: Error | unknown) => {
+  if (err instanceof Error && err.message) {
+    return <GeneralCommandResult error={err.message} />;
+  } else {
+    return <GeneralCommandResult error='An error occurred while executing the command.' />;
+  }
+};
+
+const executeCommand = async (
+  commandFunction: (argumentsString: string) => Promise<void | string>,
+  argumentsString: string
+) => {
+  try {
+    const result = await commandFunction(argumentsString);
+    if (typeof result === 'string') {
+      return <GeneralCommandResult result={result} />;
+    }
+  } catch (err) {
+    return handleCommandError(err);
+  }
+};
 
 export const Terminal = () => {
   const { currentDirectory } = usePwdStore();
@@ -15,6 +38,7 @@ export const Terminal = () => {
   const changeDirectory = useChangeDirectory();
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
+  const updateFileDirectory = useUpdateFileOrDirectory();
   const listDirectoryContents = useListDirectoryContents();
   const removeFile = useRemoveFile();
 
@@ -27,53 +51,19 @@ export const Terminal = () => {
     </span>
   );
 
-  const cd = async (directory: string) => {
-    try {
-      await changeDirectory(directory);
-    } catch (err) {
-      if (err instanceof Error && err.message) {
-        return <GeneralCommandResult error={err.message} />;
-      } else {
-        return (
-          <GeneralCommandResult error='An error occurred while creating a new file/directory.' />
-        );
-      }
-    }
-  };
-
-  const cr = async (argumentsString: string) => {
-    try {
-      await createFileOrDirectory(argumentsString);
-    } catch (err) {
-      if (err instanceof Error && err.message) {
-        return <GeneralCommandResult error={err.message} />;
-      } else {
-        return (
-          <GeneralCommandResult error='An error occurred while creating a new file/directory.' />
-        );
-      }
-    }
-  };
-
-  const cat = async (filePath: string) => {
-    try {
-      const fileContent = await showFileContent(filePath);
-      return <GeneralCommandResult result={fileContent} />;
-    } catch (err) {
-      if (err instanceof Error && err.message) {
-        return <GeneralCommandResult error={err.message} />;
-      } else {
-        return (
-          <GeneralCommandResult error='An error occurred while creating a new file/directory.' />
-        );
-      }
-    }
-  };
-
   const commands: Commands = {
-    cd,
-    cr,
-    cat,
+    cd: async (directory: string) => {
+      return await executeCommand(changeDirectory, directory);
+    },
+    cr: async (argumentsString: string) => {
+      return await executeCommand(createFileOrDirectory, argumentsString);
+    },
+    cat: async (filePath: string) => {
+      return await executeCommand(showFileContent, filePath);
+    },
+    up: async (argumentsString: string) => {
+      return await executeCommand(updateFileDirectory, argumentsString);
+    },
     ls: () => listDirectoryContents(),
     rm: (fileName: string) => removeFile(fileName),
     pwd: () => 'current directory'
