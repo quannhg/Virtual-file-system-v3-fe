@@ -1,6 +1,6 @@
 import { removeFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { appendPath, cleanArgument } from '@utils';
+import { inferPath, cleanArgument } from '@utils';
 
 export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -12,7 +12,7 @@ export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<
       const absolutePaths = [];
 
       for (const path of paths) {
-        const absoluteRemovePath = appendPath(currentDirectory, path);
+        const absoluteRemovePath = inferPath(currentDirectory, path);
         if (currentDirectory.includes(absoluteRemovePath)) {
           errorMessages.push(`Refusing to remove ${path}: Cannot remove parent folder`);
         } else {

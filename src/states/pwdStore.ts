@@ -9,11 +9,11 @@ interface PwdState {
 
 const initialPwd = readPwdLocalStorage();
 
-export const usePwdStore = create<PwdState>((set) => ({
+export const usePwdStore = create<PwdState>((set, get) => ({
   currentDirectory: initialPwd,
   updatePwd: async (newPwd) => {
     try {
-      if (newPwd) {
+      if (newPwd && !get().currentDirectory.includes(newPwd)) {
         await changeDirectory(newPwd);
       }
 

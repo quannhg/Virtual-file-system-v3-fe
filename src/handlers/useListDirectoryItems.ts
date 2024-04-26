@@ -1,6 +1,6 @@
 import { listDirectoryItems } from '@services';
 import { usePwdStore } from '@states';
-import { appendPath } from '@utils';
+import { inferPath } from '@utils';
 
 export const useListDirectoryItems = (): ((
   directory: string | undefined
@@ -8,7 +8,7 @@ export const useListDirectoryItems = (): ((
   const { currentDirectory } = usePwdStore();
 
   return async (directory: string | undefined) => {
-    const targetDirectory = appendPath(currentDirectory, directory || '');
+    const targetDirectory = inferPath(currentDirectory, directory || '');
 
     try {
       return await listDirectoryItems(targetDirectory);

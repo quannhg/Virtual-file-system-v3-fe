@@ -1,6 +1,6 @@
 import { moveFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { appendPath, cleanArgument, validatePath } from '@utils';
+import { inferPath, cleanArgument, validatePath } from '@utils';
 
 export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -9,8 +9,8 @@ export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<vo
     try {
       const { oldPath, destinationPath } = parseArguments(argumentString);
 
-      const absoluteOldPath = appendPath(currentDirectory, oldPath);
-      const absoluteDestinationPath = appendPath(currentDirectory, destinationPath);
+      const absoluteOldPath = inferPath(currentDirectory, oldPath);
+      const absoluteDestinationPath = inferPath(currentDirectory, destinationPath);
 
       await moveFileDirectory(absoluteOldPath, absoluteDestinationPath);
     } catch (err) {

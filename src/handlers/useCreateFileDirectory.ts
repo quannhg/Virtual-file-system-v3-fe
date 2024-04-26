@@ -1,6 +1,6 @@
 import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { appendPath, cleanArgument, validatePath } from '@utils';
+import { inferPath, cleanArgument, validatePath } from '@utils';
 
 export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -13,7 +13,7 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
         throw new Error(`Cannot create parent directory! Add '-p' to create parent directory.`);
       }
 
-      const newPath = appendPath(currentDirectory, path);
+      const newPath = inferPath(currentDirectory, path);
 
       await createFileDirectory(newPath, data);
     } catch (err) {
