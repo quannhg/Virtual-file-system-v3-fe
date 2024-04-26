@@ -2,7 +2,6 @@
   "directory": [
     "./src/constants",
     "./src/components",
-    "./src/interfaces",
     "./src/states",
     "./src/utils",
     "./src/services",

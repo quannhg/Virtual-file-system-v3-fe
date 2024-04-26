@@ -1,29 +1,116 @@
 # Virtual file system
 
-## Function
+## Application architecture
 
-~~1. `cd FOLDER_PATH`: change current working directory/folder to the specified `FOLDER`~~
+![Application architecture](public/architecture.png)
 
-~~2. `cr [-p] PATH [DATA]`: create a new file (if `DATA` is specified, otherwise create a new folder) at the specified `PATH`~~
-   ~~1. if the parent folder of the destination `PATH` does not exist:~~
-      ~~1. **Bonus feature:** if optional param `-p` is specified, create the missing parent folders~~
-        ~~2. else, raise error~~
-    ~~2. if there is an existing file/folder at `PATH`, raise error~~
+### Code structure
 
-~~3. `cat FILE_PATH`: show the content of a file at `FILE_PATH`. If there is no file at `FILE_PATH`, raise error.~~
+```py
+## Front-End
 
-~~4. `ls [FOLDER_PATH]`: list out all items **directly under** a folder~~
-    ~~1. the output list must include name, created_at, and size of each item **directly under** the current folder, and of the current folder itself. Size of a folder is the total size of all files within the folder. Size of a file is the number of characters in its data.~~
-        ~~1. if the optional param `FOLDER_PATH` is specified, list items in the folder at `FOLDER_PATH`. Otherwise if omitted, list items in the current working folder~~
+📦src
+ ┣ 📂components     # UI building blocks
+ ┣ 📂constants      # Fixed values (error message,...)
+ ┣ 📂handlers       # Command interaction and validation (hooks)
+ ┣ 📂services       # Back-end API communication
+ ┣ 📂state          # Shared state using Zustand
+ ┣ 📂types          # Types
+ ┣ 📂utils          # General-purpose utility functions
+ ┣ 📜App.tsx        # Main application component
+ ┗ 📜main.tsx       # Front-end entry point
+ ```
 
-5. `find NAME [FOLDER_PATH]`: search all files/folders whose name **contains** the substring `NAME`. If the optional param `FOLDER_PATH` is specified, find in the folder at `FOLDER_PATH`. Otherwise if omitted, find in the current working folder. Note:
-    1. the command should find in subfolders as well
-    2. the result should be displayed nicely to end users
+```py
+## Back-End
 
-~~6. `up PATH NAME [DATA]` update the file/folder at `PATH` to have new `NAME` and, optionally, new `DATA`~~
+📦src
+ ┣ 📂configs        # Environment variables and settings
+ ┣ 📂constants      # Back-end fixed values
+ ┣ 📂dtos           # Data structures for requests/responses (in/out, common)
+ ┣ 📂handlers       # Core business logic for APIs/tasks
+ ┣ 📂interfaces     # Contracts for entities or services
+ ┣ 📂repositories   # Data source interaction
+ ┣ 📂routes         # API endpoint definitions
+ ┣ 📂types          # Types
+ ┣ 📂utils          # General-purpose utility functions
+ ┣ 📜Server.ts      # Server configuration and startup
+ ┗ 📜index.ts       # Back-end entry point
+ ```
 
-~~7. `mv PATH FOLDER_PATH` move a file/folder at `PATH` **into** the destination `FOLDER_PATH`. Raise error if:~~
-    ~~1. there is no Folder at `FOLDER_PATH`~~
-    ~~2. `FOLDER_PATH` is sub-path of `PATH`. In other words, cannot move a folder to become a subfolder of itself~~
+### Architecture strength
 
-~~8. `rm PATH [PATH2 PATH3...]`: remove files/folders at the specified `PATH`(s)~~
+- **Clear separation of concerns:** Each component has a well-defined responsibility, making the code more modular and maintainable.
+- **Scalability:** Adding new functionalities (commands) is relatively straightforward as you can create new components without affecting existing ones.
+
+### Architecture Weaknesses
+
+- **Potential for code duplication:** Defining each command separately can lead to repetitive logic if commands share similar functionalities.
+
+## Database design
+
+### Recursive Approach
+
+![mapping](public/recursiveERD.png)
+
+- Strengths:
+  - Clearly represents the hierarchical nature of directories and files.
+- Weaknesses:
+  - Requires multiple queries to retrieve files within nested directories (e.g., 5 queries for a/b/c/d/e).
+  - Inefficient for large directory structures with many nested levels.
+  - Might not scale well for performance in the future.
+
+### Flattened Approach
+
+![ERD](public/ERD.png)
+
+- Strengths:
+  - Fewer queries needed (single query for any file path).
+  - Enables efficient retrieval of items within a folder using indexing.
+- Weaknesses:
+  - Loses the explicit representation of the directory hierarchy.
+  - Might require additional logic to reconstruct the hierarchy.
+
+### Mapping
+
+I chose the `flattened approach` because application requirements prioritize handling a large user base and amounts of items while maintaining a positive user experience.
+
+![mapping](public/mapping.png)
+
+### Full-Text Search Indexing
+
+I using `full-text search indexing` for the `flattened approach`:
+
+- Efficiently searching paths as strings.
+- Well at pattern matching, which is utilized a lot in my code.
+
+## Functionality
+
+### Supported Commands
+
+- `cd FOLDER_PATH`: Changes the current working directory to the specified path.
+
+- `cr [-p] PATH [DATA]`: Creates a new file (if `DATA` is provided) or folder at the specified path.
+  - `-p` (optional): Creates missing parent folders.
+- `cat FILE_PATH`: Displays the content of a file. Raises an error for non-existent files.
+- `ls [FOLDER_PATH]`: Lists all items (name, created_at, size) directly under the current working directory or optional specified folder.
+- `find NAME [FOLDER_PATH]`: Searches for files/folders containing the substring NAME within the current working directory or optional specified folder, including subfolders.
+- `up PATH NAME [DATA]`: Updates the file/folder at `PATH` with a new `NAME` and optional `DATA`.
+- `mv PATH FOLDER_PATH`: Moves a file/folder at `PATH` to the destination `FOLDER_PATH`.
+- `rm PATH [PATH2 PATH3...]`: Removes files/folders at the specified paths.
+
+### Aliases
+
+- `.`: Current working directory
+- `..`: Parent directory
+- `/`: Root directory
+
+## Concurrency management
+
+- Leverages database transactions for data consistency.
+- Conflicts happend:
+  - One user remove file, one user move file
+  - One user read file, one user remove/move file
+  - One user read file, one user update file
+- Resolved using a first-come, first-served approach.
+- Future Scaling:: Cassandra with "Read all, write one" consistency is ideal for future horizontal scaling due to high read availability for frequent user reads. However, write availability may be lower, a trade-off acceptable for read-heavy workloads.
