@@ -6,14 +6,14 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   server: {
-    port: 3000,
+    port: 30012,
     strictPort: true
   },
   build: {
     chunkSizeWarningLimit: 2000
   },
   preview: {
-    port: 3000,
+    port: 30012,
     strictPort: true
   }
 });

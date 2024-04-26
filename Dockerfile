@@ -16,5 +16,5 @@ WORKDIR /app
 COPY --chown=node:node --from=development /app/dist .
 RUN yarn global add serve
 
-EXPOSE 3000
-CMD serve -s . -l 3000
+EXPOSE 30012
+CMD serve -s . -l 30012
