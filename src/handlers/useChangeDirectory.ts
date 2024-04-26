@@ -1,6 +1,6 @@
 import { PATH_IS_REQUIRED } from '@constants';
 import { usePwdStore } from '@states';
-import { inferPath } from '@utils';
+import { inferPath, normalizePath } from '@utils';
 
 export const useChangeDirectory = (): ((directory: string) => Promise<void>) => {
   const { updatePwd, currentDirectory } = usePwdStore();
@@ -8,7 +8,7 @@ export const useChangeDirectory = (): ((directory: string) => Promise<void>) => 
   return async (directory: string) => {
     if (!directory) throw Error(PATH_IS_REQUIRED);
 
-    const updatedDirectory = inferPath(currentDirectory, directory);
+    const updatedDirectory = normalizePath(inferPath(currentDirectory, directory));
 
     try {
       await updatePwd(updatedDirectory);

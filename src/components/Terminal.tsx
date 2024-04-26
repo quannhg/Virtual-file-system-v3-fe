@@ -116,7 +116,7 @@ export const Terminal = () => {
     <ReactTerminal
       className='h-max'
       commands={commands}
-      prompt={'$' + currentDirectory}
+      prompt={'$' + currentDirectory + '/'}
       welcomeMessage={welcomeMessage}
       errorMessage={<span className='text-red-500'>Command not found</span>}
     />

@@ -6,5 +6,6 @@ export * from './cleanArgument';
 export * from './countOccurrences';
 export * from './formatCreateTime';
 export * from './inferPath';
+export * from './normalizePath';
 export * from './pwd';
 export * from './validatePath';
