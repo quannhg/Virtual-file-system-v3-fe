@@ -3,6 +3,7 @@
  */
 
 export * from './CommandError';
+export * from './FindFileDirectory';
 export * from './GeneralCommandResult';
 export * from './HelpCommand';
 export * from './HelpForSpecificCommand';

@@ -5,7 +5,8 @@ import {
   useRemoveFileDirectory,
   useShowFileContent,
   useUpdateFileOrDirectory,
-  useMoveFileDirectory
+  useMoveFileDirectory,
+  useFindFileDirectory
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
@@ -14,6 +15,7 @@ import { ListDirectoryCommandResult } from './ListDirectoryItems';
 import { CommandError } from './CommandError';
 import { HelpCommand } from './HelpCommand';
 import { HelpForSpecificCommand } from './HelpForSpecificCommand';
+import { FindFileDirectoryCommandResult } from './FindFileDirectory';
 
 const executeCommand = async (
   commandFunction: (argumentsString: string) => Promise<void | string>,
@@ -40,6 +42,7 @@ export const Terminal = () => {
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
   const listDirectoryItems = useListDirectoryItems();
+  const findFileDirectory = useFindFileDirectory();
   const updateFileDirectory = useUpdateFileOrDirectory();
   const moveFileDirectory = useMoveFileDirectory();
   const removeFileDirectory = useRemoveFileDirectory();
@@ -65,6 +68,23 @@ export const Terminal = () => {
     }
   };
 
+  const find = async (argumentString: string) => {
+    try {
+      if (argumentString === '--help' || argumentString === '-h')
+        return <HelpForSpecificCommand command={'find'} />;
+
+      const result = await findFileDirectory(argumentString);
+      return (
+        <FindFileDirectoryCommandResult
+          keyString={result.keyString}
+          matchingPaths={result.matchingPaths}
+        />
+      );
+    } catch (err) {
+      return <CommandError error={err} />;
+    }
+  };
+
   const commands: Commands = {
     cd: async (directory: string) => {
       return await executeCommand(changeDirectory, directory, 'cd');
@@ -79,6 +99,7 @@ export const Terminal = () => {
       return await executeCommand(updateFileDirectory, argumentsString, 'up');
     },
     ls,
+    find,
     mv: async (argumentsString: string) => {
       return await executeCommand(moveFileDirectory, argumentsString, 'mv');
     },

@@ -127,6 +127,34 @@ export type paths = {
       };
     };
   };
+  "/api/find": {
+    /** Find all items in directory */
+    get: {
+      parameters: {
+        query: {
+          keyString: string;
+          path: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": string[];
+          };
+        };
+        /** @description Default Response */
+        400: {
+          content: {
+            "application/json": {
+              /** @default No directory found with the provided path! */
+              message: string;
+            };
+          };
+        };
+      };
+    };
+  };
   "/api/up": {
     /** Update file or directory */
     put: {

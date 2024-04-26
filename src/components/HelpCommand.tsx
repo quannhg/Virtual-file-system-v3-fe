@@ -2,9 +2,9 @@ import React from 'react';
 
 export const HelpCommand: React.FC = () => {
   return (
-    <div className='flex flex-col gap-2'>
-      <h2>Available Commands:</h2>
-      <ul className='flex flex-col gap-1'>
+    <div>
+      <h2 className='mt-1 mb-4'>Available Commands:</h2>
+      <ul>
         <li>
           <strong>
             <span className='text-blue-300'>cd</span> FOLDER_PATH:
@@ -56,7 +56,7 @@ export const HelpCommand: React.FC = () => {
         </li>
       </ul>
 
-      <h2>
+      <h2 className='mt-4'>
         Enter{' '}
         <strong>
           <span className='text-blue-300'>[command]</span> -h/--help

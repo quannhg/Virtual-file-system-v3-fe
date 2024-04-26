@@ -650,6 +650,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-highlight-words@^0.16.7":
+  version "0.16.7"
+  resolved "https://registry.yarnpkg.com/@types/react-highlight-words/-/react-highlight-words-0.16.7.tgz#82fdd2d2abe4c4a5c0da44be749660f6ec42f0c2"
+  integrity sha512-+upXTIaRd3rGvh1aDQSs9z5X+sV3UM6Jrmjk03GN2GXl4v/+iOJKQj2LZHo6Vp2IoTvMdtxgME26feqo12xXLg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*":
   version "18.2.79"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-18.2.79.tgz#c40efb4f255711f554d47b449f796d1c7756d865"
@@ -1656,6 +1663,11 @@ hey-listen@^1.0.8:
   resolved "https://registry.yarnpkg.com/hey-listen/-/hey-listen-1.0.8.tgz#8e59561ff724908de1aa924ed6ecc84a56a9aa68"
   integrity sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==
 
+highlight-words-core@^1.2.0:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/highlight-words-core/-/highlight-words-core-1.2.2.tgz#1eff6d7d9f0a22f155042a00791237791b1eeaaa"
+  integrity sha512-BXUKIkUuh6cmmxzi5OIbUJxrG8OAk2MqoL1DtO3Wo9D2faJg2ph5ntyuQeLqaHJmzER6H5tllCDA9ZnNe9BVGg==
+
 human-signals@^4.3.0:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-4.3.1.tgz#ab7f811e851fca97ffbd2c1fe9a958964de321b2"
@@ -1963,6 +1975,11 @@ material-ripple-effects@2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/material-ripple-effects/-/material-ripple-effects-2.0.1.tgz#47803d2ab1561698d930e2524a7a9a19fb2829b7"
   integrity sha512-hHlUkZAuXbP94lu02VgrPidbZ3hBtgXBtjlwR8APNqOIgDZMV8MCIcsclL8FmGJQHvnORyvoQgC965vPsiyXLQ==
+
+memoize-one@^4.0.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/memoize-one/-/memoize-one-4.1.0.tgz#a2387c58c03fff27ca390c31b764a79addf3f906"
+  integrity sha512-2GApq0yI/b22J2j9rhbrAlsHb0Qcz+7yWxeLG8h+95sl1XPUgeLimQSOdur4Vw7cUhrBHwaUZxWFZueojqNRzA==
 
 merge-stream@^2.0.0:
   version "2.0.0"
@@ -2367,7 +2384,7 @@ prettier@3.0.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.0.1.tgz#65271fc9320ce4913c57747a70ce635b30beaa40"
   integrity sha512-fcOWSnnpCrovBsmFZIGIy9UqK2FaI7Hqax+DIO0A9UxeVoY4iweyaFjS5TavZN97Hfehph0nhsZnjlVKzEQSrQ==
 
-prop-types@15.8.1, prop-types@^15.7.2:
+prop-types@15.8.1, prop-types@^15.5.8, prop-types@^15.7.2:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -2410,6 +2427,15 @@ react-dom@18.2.0, react-dom@^18.2.0:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
+
+react-highlight-words@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/react-highlight-words/-/react-highlight-words-0.20.0.tgz#c60bfff5d14678c8f0e8fbe4bdcf083e6c70d507"
+  integrity sha512-asCxy+jCehDVhusNmCBoxDf2mm1AJ//D+EzDx1m5K7EqsMBIHdZ5G4LdwbSEXqZq1Ros0G0UySWmAtntSph7XA==
+  dependencies:
+    highlight-words-core "^1.2.0"
+    memoize-one "^4.0.0"
+    prop-types "^15.5.8"
 
 react-hook-form@^7.45.4:
   version "7.51.3"

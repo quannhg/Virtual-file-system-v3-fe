@@ -7,7 +7,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>cd</span> FOLDER_PATH
         </strong>
-        <p>Change current working directory/folder to the specified FOLDER.</p>
+        <p className='mt-4'>Change current working directory/folder to the specified FOLDER.</p>
       </div>
     ),
     cr: (
@@ -15,7 +15,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>cr</span> [-p] PATH [DATA]
         </strong>
-        <p>
+        <p className='mt-4'>
           Create a new file (if DATA is specified, otherwise create a new folder) at the specified
           PATH.
           <br />
@@ -36,7 +36,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>cat</span> FILE_PATH
         </strong>
-        <p>
+        <p className='mt-4'>
           Show the content of a file at FILE_PATH. If there is no file at FILE_PATH, raise an error.
         </p>
       </div>
@@ -46,7 +46,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>ls</span> [FOLDER_PATH]
         </strong>
-        <p>
+        <p className='mt-4'>
           List out all items directly under a folder.
           <br />
           <br />
@@ -73,7 +73,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>find</span> NAME [FOLDER_PATH]
         </strong>
-        <p>
+        <p className='mt-4'>
           Search all files/folders whose name contains the substring NAME.
           <br />
           <br />
@@ -90,7 +90,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>up</span> PATH NAME [DATA]
         </strong>
-        <p>
+        <p className='mt-4'>
           Update the file/folder at PATH to have new NAME and, optionally, new DATA.
           <br />
           <br />
@@ -103,7 +103,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>mv</span> PATH FOLDER_PATH
         </strong>
-        <p>
+        <p className='mt-4'>
           Move a file/folder at PATH into the destination FOLDER_PATH.
           <br />
           <br />
@@ -123,7 +123,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
         <strong>
           <span className='text-blue-300'>rm</span> PATH [PATH2 PATH3...]
         </strong>
-        <p>Remove files/folders at the specified PATH(s).</p>
+        <p className='mt-4'>Remove files/folders at the specified PATH(s).</p>
       </div>
     )
   };

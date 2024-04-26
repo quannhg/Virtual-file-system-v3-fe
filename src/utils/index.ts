@@ -3,6 +3,7 @@
  */
 
 export * from './cleanArgument';
+export * from './countOccurrences';
 export * from './formatCreateTime';
 export * from './inferPath';
 export * from './pwd';
