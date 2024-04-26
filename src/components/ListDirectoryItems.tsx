@@ -16,8 +16,8 @@ export const ListDirectoryCommandResult: React.FC<{
       <tbody>
         {result.map((item) => (
           <tr key={item.name}>
-            <td className={`px-4 py-2 ${item.name.endsWith('/') ? 'text-blue-500' : ''}`}>
-              {item.name}
+            <td className={`px-4 py-2 whitespace-pre ${item.name.endsWith('/') ? 'text-blue-500' : ''}`}>
+            {item.name}
             </td>
             <td className='px-4 py-2'>{formatCreateDate(item.createAt)}</td>
             <td className='px-4 py-2'>{item.size}</td>
