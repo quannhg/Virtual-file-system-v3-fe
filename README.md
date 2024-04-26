@@ -113,4 +113,4 @@ I using `full-text search indexing` for the `flattened approach`:
   - One user read file, one user remove/move file
   - One user read file, one user update file
 - Resolved using a first-come, first-served approach.
-- Future Scaling:: Cassandra with "Read all, write one" consistency is ideal for future horizontal scaling due to high read availability for frequent user reads. However, write availability may be lower, a trade-off acceptable for read-heavy workloads.
+- Future Scaling: Cassandra with "Read all, write one" consistency is ideal for future horizontal scaling due to high read availability for frequent user reads. However, write availability may be lower, a trade-off acceptable for read-heavy workloads.
