@@ -24,7 +24,7 @@ export const useFindFileDirectory = (): ((
 };
 
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.trim().match(/"([^"]+)"|\S+/g) || [];
+  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
 
   if (args.length < 1) {
     throw Error(`Missing argument, required 'key string'`);

@@ -36,7 +36,7 @@ export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<
 };
 
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.trim().match(/"([^"]+)"|\S+/g) || [];
+  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
 
   if (args.length < 1) {
     throw Error('Missing argument: at least one argument is required');

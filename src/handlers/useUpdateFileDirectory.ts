@@ -20,7 +20,7 @@ export const useUpdateFileOrDirectory = (): ((argumentsString: string) => Promis
 };
 
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.trim().match(/"([^"]+)"|\S+/g) || [];
+  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
 
   if (args.length < 2) {
     throw Error(`Missing argument, required 'old path' and 'new path'`);

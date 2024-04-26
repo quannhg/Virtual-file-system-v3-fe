@@ -23,7 +23,7 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
 };
 
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.trim().match(/"([^"]+)"|\S+/g) || [];
+  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
 
   if (args.length === 0) {
     throw Error(`Missing 'path' argument`);

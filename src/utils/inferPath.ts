@@ -1,6 +1,10 @@
 export const inferPath = (currentPath: string, appendedPath: string): string => {
   if (appendedPath.length === 0) return currentPath;
 
+  if (appendedPath === '/') {
+    return '';
+  }
+
   if (appendedPath[0] === '/') {
     currentPath = '';
   }
