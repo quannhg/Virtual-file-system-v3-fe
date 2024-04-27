@@ -4,7 +4,7 @@ export function normalizePath(path: string) {
     isAbs = true;
     path = path.slice(1);
   }
-  if (path === '') return '';
+  if (path === '') return isAbs ? '/' : '';
   const subpaths = path.split('/');
   return (isAbs ? '/' : '') + subpaths.map(normalizeSubpath).join('/');
 }
