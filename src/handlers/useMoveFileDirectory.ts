@@ -1,6 +1,6 @@
 import { moveFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, cleanArgument, validatePath } from '@utils';
+import { inferPath, normalizePath, extractArguments } from '@utils';
 
 export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -14,9 +14,7 @@ export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<vo
 
       if (absoluteDestinationPath.includes(absoluteOldPath)) {
         throw Error(
-          `Refusing to move ${absoluteOldPath.split('/')[-1]} to ${
-            absoluteDestinationPath.split('/')[-1]
-          }: Cannot move parent folder to it's sub`
+          `Refusing to move ${absoluteOldPath} to ${absoluteDestinationPath}: Cannot move a folder to its subfolder`
         );
       }
 
@@ -27,22 +25,21 @@ export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<vo
   };
 };
 
+const usage = 'usage: mv PATH FOLDER_PATH';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
+
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
+  const args = extractArguments(argumentString);
 
-  if (args.length < 2) {
-    throw Error(`Missing argument, required 'old path' and 'destination path'`);
-  }
+  if (!args?.length) throw Error(invalidDiagnostic);
 
-  if (args.length > 3) {
-    throw Error(`Unrecognized argument(s): ${args.slice(3).join(', ')}`);
-  }
+  const oldPath = normalizePath(args.shift()!);
 
-  const oldPath = cleanArgument(args[0] || '');
-  validatePath(oldPath);
+  if (!args.length) throw Error(invalidDiagnostic);
 
-  const destinationPath = cleanArgument(args[1] || '');
-  validatePath(destinationPath);
+  const destinationPath = normalizePath(args.shift()!);
+
+  if (args.length > 0) throw Error(invalidDiagnostic);
 
   return { oldPath, destinationPath };
 };
