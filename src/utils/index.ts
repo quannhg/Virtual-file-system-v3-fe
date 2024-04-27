@@ -7,5 +7,6 @@ export * from './countOccurrences';
 export * from './formatCreateTime';
 export * from './inferPath';
 export * from './normalizePath';
+export * from './parseArgs';
 export * from './pwd';
 export * from './validatePath';

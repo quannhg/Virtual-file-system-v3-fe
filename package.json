@@ -12,7 +12,9 @@
     "format": "prettier '**/*.{tsx,ts,js,json,md,yml,yaml}' --write",
     "prepare": "is-ci || husky",
     "clean:git": "git branch --merged >/tmp/merged-branches && nano /tmp/merged-branches && xargs git branch -D </tmp/merged-branches && git fetch --prune --all",
-    "api:pull": "openapi-typescript -o src/openapi-spec.ts -t"
+    "api:pull": "openapi-typescript -o src/openapi-spec.ts -t",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
@@ -54,6 +56,7 @@
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vite-tsconfig-paths": "^4.3.2"
+    "vite-tsconfig-paths": "^4.3.2",
+    "vitest": "^1.5.2"
   }
 }
