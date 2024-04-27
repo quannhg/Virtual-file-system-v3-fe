@@ -1,42 +1,38 @@
 import { updateFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, cleanArgument, validatePath } from '@utils';
+import { inferPath, removeQuotes, normalizePath, extractArguments } from '@utils';
 
 export const useUpdateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
 
   return async (argumentString: string) => {
-    try {
       const { oldPath, newPath, newData } = parseArguments(argumentString);
 
       const absoluteOldPath = inferPath(currentDirectory, oldPath);
       const absoluteNewPath = inferPath(currentDirectory, newPath);
 
       await updateFileDirectory(absoluteOldPath, absoluteNewPath, newData);
-    } catch (err) {
-      throw err;
     }
   };
-};
+
+const usage = 'Usage: up PATH NAME [DATA]';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
 
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
+  const args = extractArguments(argumentString);
 
-  if (args.length < 2) {
-    throw Error(`Missing argument, required 'old path' and 'new path'`);
+  if (!args?.length) throw Error(invalidDiagnostic);
+  const oldPath = normalizePath(args.shift()!);
+
+  if (!args.length) throw Error(invalidDiagnostic);
+  const newPath = normalizePath(args.shift()!);
+
+  let newData = null;
+  if (args.length > 0) {
+    newData = removeQuotes(args.shift()!);
   }
 
-  if (args.length > 3) {
-    throw Error(`Unrecognized argument(s): ${args.slice(3).join(', ')}`);
-  }
-
-  const oldPath = cleanArgument(args[0] || '');
-  validatePath(oldPath);
-
-  const newPath = cleanArgument(args[1] || '');
-  validatePath(newPath);
-
-  const newData = args.length === 3 ? cleanArgument(args[2] || '') : null;
+  if (args.length) throw Error(invalidDiagnostic);
 
   return { oldPath, newPath, newData };
 };
