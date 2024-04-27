@@ -35,7 +35,7 @@ export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<
   };
 };
 
-const usage = 'rm PATH [PATH2 PATH3...]';
+const usage = 'Usage: rm PATH [PATH2 PATH3...]';
 const invalidDiagnostic = `Invalid arguments\n${usage}`;
 
 const parseArguments = (argumentString: string) => {
