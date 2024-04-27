@@ -12,6 +12,14 @@ export const useMoveFileDirectory = (): ((argumentsString: string) => Promise<vo
       const absoluteOldPath = inferPath(currentDirectory, oldPath);
       const absoluteDestinationPath = inferPath(currentDirectory, destinationPath);
 
+      if (absoluteDestinationPath.includes(absoluteOldPath)) {
+        throw Error(
+          `Refusing to move ${absoluteOldPath.split('/')[-1]} to ${
+            absoluteDestinationPath.split('/')[-1]
+          }: Cannot move parent folder to it's sub`
+        );
+      }
+
       await moveFileDirectory(absoluteOldPath, absoluteDestinationPath);
     } catch (err) {
       throw err;
