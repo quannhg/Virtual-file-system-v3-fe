@@ -1,33 +1,41 @@
-import { countOccurrences } from '@utils';
 import React from 'react';
-import Highlighter from 'react-highlight-words';
+
+type HighlightStringProps = {
+  path: string;
+  keyString: string;
+};
+
+const HighlightString: React.FC<HighlightStringProps> = ({ path, keyString }) => {
+  const lastIndexOfKeyString = path.lastIndexOf(keyString);
+  return (
+    <span>
+      <span>{path.slice(0, lastIndexOfKeyString)}</span>
+      <span className='text-red-500'>
+        {path.slice(lastIndexOfKeyString, lastIndexOfKeyString + keyString.length)}
+      </span>
+      <span>{path.slice(lastIndexOfKeyString + keyString.length)}</span>
+    </span>
+  );
+};
 
 export const FindFileDirectoryCommandResult: React.FC<{
   keyString: string;
   matchingPaths: string[];
 }> = ({ keyString, matchingPaths }) => {
   return (
-    <div className='ml-5'>
-      <h2>Matching Paths:</h2>
+    <span className='ml-5'>
       {matchingPaths.length === 0 ? (
-        <p>No matching results found.</p>
+        <span>No matching results found.</span>
       ) : (
-        <ul className='list-disc'>
+        <div className='list-disc'>
+          <h2>Matching Paths:</h2>
           {matchingPaths.map((path) => (
-            <li key={path} className='px-4 py-2'>
-              <Highlighter
-                highlightClassName='bg-transparent'
-                activeClassName='text-red-500'
-                searchWords={[keyString]}
-                activeIndex={countOccurrences(path, keyString) - 1}
-                textToHighlight={path}
-                caseSensitive={true}
-                style={{ color: path.endsWith('/') ? 'blue-500' : '' }}
-              />
-            </li>
+            <div key={path} className='px-4 py-2'>
+              <HighlightString path={path} keyString={keyString} />
+            </div>
           ))}
-        </ul>
+        </div>
       )}
-    </div>
+    </span>
   );
 };

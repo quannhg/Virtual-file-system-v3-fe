@@ -1,6 +1,6 @@
 import { findFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { cleanArgument, inferPath, validatePath } from '@utils';
+import { cleanArgument, inferPath, normalizePath, validatePath } from '@utils';
 
 export const useFindFileDirectory = (): ((
   argumentString: string
@@ -10,7 +10,8 @@ export const useFindFileDirectory = (): ((
   return async (argumentString: string) => {
     const { keyString, findPath } = parseArguments(argumentString);
 
-    const targetDirectory = inferPath(currentDirectory, findPath || '');
+    const targetDirectory = normalizePath(inferPath(currentDirectory, findPath || ''));
+
     try {
       const matchingPaths = await findFileDirectory(keyString, targetDirectory);
       return {

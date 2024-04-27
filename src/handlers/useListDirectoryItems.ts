@@ -10,8 +10,6 @@ export const useListDirectoryItems = (): ((
   return async (directory: string | undefined) => {
     const targetDirectory = inferPath(currentDirectory, directory || '');
 
-    console.debug(targetDirectory);
-
     try {
       return await listDirectoryItems(targetDirectory);
     } catch (err) {
