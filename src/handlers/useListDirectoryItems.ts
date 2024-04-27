@@ -1,19 +1,27 @@
 import { listDirectoryItems } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath } from '@utils';
+import { inferPath, extractArguments, normalizePath } from '@utils';
 
 export const useListDirectoryItems = (): ((
   directory: string | undefined
 ) => Promise<ListDirectoryItem[]>) => {
   const { currentDirectory } = usePwdStore();
 
-  return async (directory: string | undefined) => {
-    const targetDirectory = inferPath(currentDirectory, directory || '');
+  return async (argumentsString: string | undefined) => {
+    const args = extractArguments(argumentsString || '');
 
-    try {
-      return await listDirectoryItems(targetDirectory);
-    } catch (err) {
-      throw err;
+    if (!args) {
+      throw Error('Invalid arguments\nUsage: ls [FOLDER_PATH]');
     }
+
+    const folderPath = normalizePath(args.shift() || '');
+
+    if (args.length > 0) {
+      throw Error('Invalid arguments\nUsage: ls [FOLDER_PATH]');
+    }
+
+    const targetDirectory = inferPath(currentDirectory, folderPath);
+
+    return await listDirectoryItems(targetDirectory);
   };
 };
