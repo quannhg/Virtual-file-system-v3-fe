@@ -1,6 +1,6 @@
 import { removeFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, cleanArgument } from '@utils';
+import { inferPath, extractArguments, normalizePath } from '@utils';
 
 export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -35,12 +35,15 @@ export const useRemoveFileDirectory = (): ((argumentsString: string) => Promise<
   };
 };
 
-const parseArguments = (argumentString: string) => {
-  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
+const usage = 'rm PATH [PATH2 PATH3...]';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
 
-  if (args.length < 1) {
-    throw Error('Missing argument: at least one argument is required');
+const parseArguments = (argumentString: string) => {
+  const args = extractArguments(argumentString);
+
+  if (!args?.length) {
+    throw Error(invalidDiagnostic);
   }
 
-  return args.map(cleanArgument);
+  return args.map(normalizePath);
 };
