@@ -1,20 +1,31 @@
-import { PATH_IS_REQUIRED } from '@constants';
 import { usePwdStore } from '@states';
-import { inferPath } from '@utils';
+import { inferPath, extractArguments, normalizePath } from '@utils';
 import { showFileContent } from '@services';
 
-export const useShowFileContent = (): ((filePath: string) => Promise<string>) => {
+export const useShowFileContent = (): ((argumentsString: string) => Promise<string>) => {
   const { currentDirectory } = usePwdStore();
 
-  return async (filePath: string) => {
-    if (!filePath) throw Error(PATH_IS_REQUIRED);
+  return async (argumentsString: string) => {
+    const folderPath = parseArguments(argumentsString);
 
-    const absoluteFilePath = inferPath(currentDirectory, filePath);
-    try {
-      const fileData = await showFileContent(absoluteFilePath);
-      return fileData;
-    } catch (err) {
-      throw err;
-    }
+    const absoluteFilePath = inferPath(currentDirectory, folderPath);
+    return await showFileContent(absoluteFilePath);
   };
+};
+
+const usage = 'cat FILE_PATH';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
+
+const parseArguments = (argumentString: string) => {
+  const args = extractArguments(argumentString);
+
+  if (!args?.length) {
+    throw Error(invalidDiagnostic);
+  }
+
+  const folderPath = normalizePath(args.shift()!);
+
+  if (args.length) throw Error(invalidDiagnostic);
+
+  return folderPath;
 };
