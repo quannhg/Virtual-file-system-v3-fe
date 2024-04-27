@@ -1,6 +1,6 @@
 import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, cleanArgument as removeQuotes, extractArguments, normalizePath } from '@utils';
+import { inferPath, removeQuotes as removeQuotes, extractArguments, normalizePath } from '@utils';
 
 export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
@@ -28,7 +28,7 @@ const parseArguments = (argumentString: string) => {
     throw Error(invalidDiagnostic);
   }
 
-  let shouldCreateParents = false
+  let shouldCreateParents = false;
   if (args[0] === '-p') {
     shouldCreateParents = true;
     args.shift();
@@ -40,10 +40,7 @@ const parseArguments = (argumentString: string) => {
 
   const path = normalizePath(args.shift()!);
 
-  let data = null;
-  if (args.length > 0) {
-    data = removeQuotes(args.shift()!);
-  }
+  const data = removeQuotes(args.shift() || '') || null;
 
   if (args.length > 0) {
     throw Error(invalidDiagnostic);
