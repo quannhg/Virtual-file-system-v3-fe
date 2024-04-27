@@ -1,6 +1,6 @@
 import { findFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { cleanArgument, inferPath, normalizePath, validatePath } from '@utils';
+import { extractArguments, inferPath, normalizePath, removeQuotes } from '@utils';
 
 export const useFindFileDirectory = (): ((
   argumentString: string
@@ -10,44 +10,33 @@ export const useFindFileDirectory = (): ((
   return async (argumentString: string) => {
     const { keyString, findPath } = parseArguments(argumentString);
 
-    const targetDirectory = normalizePath(inferPath(currentDirectory, findPath || ''));
+    const targetDirectory = inferPath(currentDirectory, findPath || '');
 
-    try {
-      const matchingPaths = await findFileDirectory(keyString, targetDirectory);
-      return {
-        keyString,
-        matchingPaths
-      };
-    } catch (err) {
-      throw err;
-    }
+    const matchingPaths = await findFileDirectory(keyString, targetDirectory);
+
+    return {
+      keyString,
+      matchingPaths
+    };
   };
 };
 
+const usage = 'Usage: find NAME [FOLDER_PATH]';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
+
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
+  const args = extractArguments(argumentString);
 
-  if (args.length < 1) {
-    throw Error(`Missing argument, required 'key string'`);
+  if (!args?.length) {
+    throw Error(invalidDiagnostic);
   }
 
-  if (args.length > 3) {
-    throw Error(`Unrecognized argument(s): ${args.slice(3).join(', ')}`);
-  }
+  const keyString = removeQuotes(args.shift()!);
 
-  const keyString = cleanArgument(args[0] || '');
-  const isKeyString = /^[a-zA-Z0-9 _-]+$/.test(keyString);
-  if (!isKeyString) {
-    throw new Error(
-      `Invalid characters in key string: ${args[0]}. Key string can only contain alphanumeric characters, spaces, underscores, and hyphens.`
-    );
-  }
+  const findPath = normalizePath(args.shift() || '') || null;
 
-  let findPath = undefined;
-  if (args.length === 2) {
-    const path = cleanArgument(args[1] || '');
-    validatePath(path);
-    findPath = path;
+  if (args.length > 0) {
+    throw Error(invalidDiagnostic);
   }
 
   return { keyString, findPath };
