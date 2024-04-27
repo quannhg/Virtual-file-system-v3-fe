@@ -1,8 +1,12 @@
 export function normalizePath(path: string) {
-  console.log(path);
+  let isAbs = false;
+  if (path.startsWith('/')) {
+    isAbs = true;
+    path = path.slice(1);
+  }
   if (path === '') return '';
   const subpaths = path.split('/');
-  return subpaths.map(normalizeSubpath).join('/');
+  return (isAbs ? '/' : '') + subpaths.map(normalizeSubpath).join('/');
 }
 
 function normalizeSubpath(subpath: string): string {
