@@ -48,6 +48,8 @@
 
 ## Database design
 
+Two approaches were considered for data design: recursive and flattened.
+
 ### Recursive Approach
 
 ![mapping](public/recursiveERD.png)
