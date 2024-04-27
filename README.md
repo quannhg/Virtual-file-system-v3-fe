@@ -11,7 +11,6 @@
 
 📦src
  ┣ 📂components     # UI building blocks
- ┣ 📂constants      # Fixed values (error message,...)
  ┣ 📂handlers       # Command interaction and validation (hooks)
  ┣ 📂services       # Back-end API communication
  ┣ 📂state          # Shared state using Zustand

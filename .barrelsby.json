@@ -1,6 +1,5 @@
 {
   "directory": [
-    "./src/constants",
     "./src/components",
     "./src/states",
     "./src/utils",
