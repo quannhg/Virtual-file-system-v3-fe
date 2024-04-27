@@ -1,4 +1,5 @@
 export function normalizePath(path: string) {
+  if (path === '') return '';
   const subpaths = path.split('/');
   return subpaths.map(normalizeSubpath).join('/');
 }
