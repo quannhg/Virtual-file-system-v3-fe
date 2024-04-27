@@ -77,13 +77,6 @@ I chose the `flattened approach` because application requirements prioritize han
 
 ![mapping](public/mapping.png)
 
-### Full-Text Search Indexing
-
-I using `full-text search indexing` for the `flattened approach`:
-
-- Efficiently searching paths as strings.
-- Well at pattern matching, which is utilized a lot in my code.
-
 ## Functionality
 
 ### Supported Commands
