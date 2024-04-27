@@ -1,54 +1,53 @@
 import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, cleanArgument, validatePath } from '@utils';
+import { inferPath, cleanArgument as removeQuotes, extractArguments, normalizePath } from '@utils';
 
 export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
 
   return async (argumentString: string) => {
-    try {
-      const { path, data, createParents } = parseArguments(argumentString);
+    const { path, data, createParents } = parseArguments(argumentString);
 
-      if (!createParents && path && path.includes('/')) {
-        throw new Error(`Cannot create parent directory! Add '-p' to create parent directory.`);
-      }
-
-      const newPath = inferPath(currentDirectory, path);
-
-      await createFileDirectory(newPath, data);
-    } catch (err) {
-      throw err;
+    if (!createParents && path && path.includes('/')) {
+      throw Error(`Add '-p' to create missing parent directories.`);
     }
+
+    const newPath = inferPath(currentDirectory, path);
+
+    await createFileDirectory(newPath, data);
   };
 };
 
+const usage = 'Usage: cr [-p] PATH [DATA]';
+const invalidDiagnostic = `Invalid arguments\n${usage}`;
+
 const parseArguments = (argumentString: string) => {
-  const args = argumentString.match(/"([^"]+)"|\S+/g) || [];
+  const args = extractArguments(argumentString);
+
+  if (!args?.length) {
+    throw Error(invalidDiagnostic);
+  }
+
+  let shouldCreateParents = false
+  if (args[0] === '-p') {
+    shouldCreateParents = true;
+    args.shift();
+  }
 
   if (args.length === 0) {
-    throw Error(`Missing 'path' argument`);
+    throw Error(invalidDiagnostic);
   }
 
-  const createParents = args[0] === '-p';
-
-  const pathIndex = createParents ? 1 : 0;
-  const path = cleanArgument(args[pathIndex] || '');
-  validatePath(path);
-
-  const minimumLen = createParents ? 2 : 1;
-
-  if (args.length < minimumLen) {
-    throw Error(`Missing 'path' argument`);
-  }
-
-  if (args.length > minimumLen + 1) {
-    throw Error(`Unrecognized argument(s): ${args.slice(minimumLen + 1).join(', ')}`);
-  }
+  const path = normalizePath(args.shift()!);
 
   let data = null;
-  if (args.length === minimumLen + 1) {
-    data = cleanArgument(args[minimumLen] || '');
+  if (args.length > 0) {
+    data = removeQuotes(args.shift()!);
   }
 
-  return { path, data, createParents };
+  if (args.length > 0) {
+    throw Error(invalidDiagnostic);
+  }
+
+  return { path, data, createParents: shouldCreateParents };
 };
