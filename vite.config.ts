@@ -10,10 +10,10 @@ export default defineConfig({
     strictPort: true
   },
   build: {
-    chunkSizeWarningLimit: 2000
+    chunkSizeWarningLimit: 2000,
   },
   preview: {
     port: 30012,
     strictPort: true
-  }
+  },
 });
