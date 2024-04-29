@@ -42,6 +42,7 @@ export type paths = {
         content: {
           "application/json": {
             path: string;
+            shouldCreateParent: boolean;
             data: string | null;
           };
         };

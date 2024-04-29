@@ -6,15 +6,11 @@ export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promis
   const { currentDirectory } = usePwdStore();
 
   return async (argumentString: string) => {
-    const { path, data, createParents } = parseArguments(argumentString);
-
-    if (!createParents && path && path.includes('/')) {
-      throw Error(`Add '-p' to create missing parent directories.`);
-    }
+    const { path, data, shouldCreateParents } = parseArguments(argumentString);
 
     const newPath = inferPath(currentDirectory, path);
 
-    await createFileDirectory(newPath, data);
+    await createFileDirectory(newPath, shouldCreateParents, data);
   };
 };
 
@@ -46,5 +42,5 @@ const parseArguments = (argumentString: string) => {
     throw Error(invalidDiagnostic);
   }
 
-  return { path, data, createParents: shouldCreateParents };
+  return { path, data, shouldCreateParents };
 };
