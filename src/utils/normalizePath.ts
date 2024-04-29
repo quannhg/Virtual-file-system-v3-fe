@@ -1,13 +1,22 @@
 export function normalizePath(path: string) {
   let isAbs = false;
+  let hasSlashAtTail = false;
   if (path.startsWith('/')) {
     isAbs = true;
     path = path.slice(1);
   }
   if (path === '') return isAbs ? '/' : '';
   const subpaths = path.split('/');
+  if (subpaths[subpaths.length - 1] === '') {
+    subpaths.pop();
+    hasSlashAtTail = true;
+  }
 
-  return (isAbs ? '/' : '') + subpaths.map(normalizeSubpath).join('/');
+  return (
+    (path.startsWith('/') ? '' : '/') +
+    subpaths.map(normalizeSubpath).join('/') +
+    (hasSlashAtTail ? '/' : '')
+  );
 }
 
 function normalizeSubpath(subpath: string): string {
