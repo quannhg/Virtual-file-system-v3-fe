@@ -108,3 +108,55 @@ I chose the `flattened approach` because application requirements prioritize han
   - One user read file, one user update file
 - Resolved using a first-come, first-served approach.
 - Future Scaling: Cassandra with "Read all, write one" consistency is ideal for future horizontal scaling due to high read availability for frequent user reads. However, write availability may be lower, a trade-off acceptable for read-heavy workloads.
+
+## How to run locally
+
+### Back-end
+
+**1. Environment Variables:**
+
+Create a file named `.env` in your project root based on the `.env.example` file.
+
+**2. Install dependencies and database:**
+
+This command will install all the required dependencies for your project and set up the database using Docker.
+
+```bash
+# Install dependencies and database using docker
+yarn bootstrap
+```
+
+**3. Migrate schema and seed data:**  
+Wait few seconds to mysql accept connection before running migrations:
+
+```bash
+# Migrate Prisma schema and generate seed data
+yarn db:migrate && npx prisma db seed 
+```
+
+**4. Start Back-End server:**
+
+```bash
+# Start Back-End server
+yarn start
+```
+
+### Front-end
+
+**1. Environment Variables:**
+
+Create a file named `.env` in your project root based on the `.env.example` file (similar to the back-end).
+
+**2. Install dependencies:**
+
+```bash
+# Install dependencies
+yarn
+```
+
+**3. Start Front-End server:**
+
+```bash
+# Start Front-End server
+yarn start
+```
