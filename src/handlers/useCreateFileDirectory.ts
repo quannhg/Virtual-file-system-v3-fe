@@ -36,7 +36,8 @@ const parseArguments = (argumentString: string) => {
 
   const path = normalizePath(args.shift()!);
 
-  const data = removeQuotes(args.shift() || '') || null;
+  const raw_data_arg = args.shift();
+  const data = raw_data_arg ? removeQuotes(raw_data_arg) : null;
 
   if (args.length > 0) {
     throw Error(invalidDiagnostic);

@@ -6,7 +6,7 @@ export async function createFileDirectory(
   raw_data: string | null
 ) {
   const { data, error } = await apiClient.POST('/api/cr', {
-    body: { path: path, shouldCreateParent, data: raw_data || null }
+    body: { path: path, shouldCreateParent, data: raw_data }
   });
   if (data) return data;
   throw Error(error.message);
