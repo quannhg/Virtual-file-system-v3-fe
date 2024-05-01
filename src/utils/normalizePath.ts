@@ -13,9 +13,7 @@ export function normalizePath(path: string) {
   }
 
   return (
-    (path.startsWith('/') ? '' : '/') +
-    subpaths.map(normalizeSubpath).join('/') +
-    (hasSlashAtTail ? '/' : '')
+    (isAbs ? '/' : '') + subpaths.map(normalizeSubpath).join('/') + (hasSlashAtTail ? '/' : '')
   );
 }
 
