@@ -1,6 +1,6 @@
 import { createFileDirectory } from '@services';
 import { usePwdStore } from '@states';
-import { inferPath, removeQuotes as removeQuotes, extractArguments, normalizePath } from '@utils';
+import { inferPath, removeQuotes, extractArguments, normalizePath } from '@utils';
 
 export const useCreateFileOrDirectory = (): ((argumentsString: string) => Promise<void>) => {
   const { currentDirectory } = usePwdStore();
