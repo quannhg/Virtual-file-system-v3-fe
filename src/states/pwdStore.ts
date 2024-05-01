@@ -17,6 +17,8 @@ export const usePwdStore = create<PwdState>((set, get) => ({
         await changeDirectory(newPwd);
       }
 
+      if (newPwd.endsWith('/')) newPwd = newPwd.slice(0, -1);
+
       updatePwdLocalStorage(newPwd);
       set({ currentDirectory: newPwd });
     } catch (err) {
