@@ -2,7 +2,7 @@ export const inferPath = (currentPath: string, appendedPath: string): string => 
   if (appendedPath.length === 0) return currentPath.length !== 0 ? currentPath : '/';
 
   if (appendedPath === '/') {
-    return '';
+    return '/';
   }
 
   if (appendedPath[0] === '/') {
@@ -34,5 +34,5 @@ export const inferPath = (currentPath: string, appendedPath: string): string => 
     }
   }
 
-  return resultPath + (hasSlashAtTail ? '/' : '');
+  return (resultPath.length !== 0 ? resultPath : '/') + (hasSlashAtTail ? '/' : '');
 };
