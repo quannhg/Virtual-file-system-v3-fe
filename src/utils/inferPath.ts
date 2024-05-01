@@ -9,9 +9,15 @@ export const inferPath = (currentPath: string, appendedPath: string): string => 
     currentPath = '';
   }
 
-  const parts = appendedPath.replace(/^\/+|\/+$/g, '').split('/');
-  let resultPath = currentPath;
+  const parts = appendedPath.replace(/^\//g, '').split('/');
 
+  let hasSlashAtTail = false;
+  if (parts[parts.length - 1] === '') {
+    parts.pop();
+    hasSlashAtTail = true;
+  }
+
+  let resultPath = currentPath;
   for (const part of parts) {
     if (part === '.') {
       continue;
@@ -28,5 +34,5 @@ export const inferPath = (currentPath: string, appendedPath: string): string => 
     }
   }
 
-  return resultPath;
+  return resultPath + (hasSlashAtTail ? '/' : '');
 };
