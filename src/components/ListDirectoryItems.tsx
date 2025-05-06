@@ -20,6 +20,7 @@ export const ListDirectoryCommandResult: React.FC<{
           <tr key={item.name}>
             <td
               className={`px-4 py-2 whitespace-pre ${
+                item.type === 'SYMLINK' ? "text-green-500" :
                 item.name.endsWith('/') ? 'text-blue-500' : ''
               }`}
             >
