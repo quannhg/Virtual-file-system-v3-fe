@@ -4,6 +4,7 @@ import React from 'react';
 export const ListDirectoryCommandResult: React.FC<{
   result: ListDirectoryItem[];
 }> = ({ result }) => {
+
   return (
     <table className='table-auto'>
       <thead>
@@ -11,6 +12,7 @@ export const ListDirectoryCommandResult: React.FC<{
           <th className='px-4 py-2'>Name</th>
           <th className='px-4 py-2'>Created At</th>
           <th className='px-4 py-2'>Size</th>
+          <th className='px-4 py-2'>Type</th>
         </tr>
       </thead>
       <tbody>
@@ -25,6 +27,7 @@ export const ListDirectoryCommandResult: React.FC<{
             </td>
             <td className='px-4 py-2'>{formatCreateDate(item.createAt)}</td>
             <td className='px-4 py-2'>{item.size}</td>
+            <td className='px-4 py-2'>{item.type}</td>
           </tr>
         ))}
       </tbody>

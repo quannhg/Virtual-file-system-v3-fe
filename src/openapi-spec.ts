@@ -110,6 +110,7 @@ export type paths = {
         200: {
           content: {
             "application/json": {
+                type: any;
                 name: string;
                 createAt: string;
                 size: number;
