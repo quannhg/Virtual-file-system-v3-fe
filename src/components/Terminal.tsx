@@ -6,7 +6,8 @@ import {
   useShowFileContent,
   useUpdateFileOrDirectory,
   useMoveFileDirectory,
-  useFindFileDirectory
+  useFindFileDirectory,
+  useCreateSymlink
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
@@ -38,6 +39,7 @@ const executeCommand = async (
 export const Terminal = () => {
   const { currentDirectory } = usePwdStore();
 
+  const createSymLink = useCreateSymlink();
   const changeDirectory = useChangeDirectory();
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
@@ -93,7 +95,12 @@ export const Terminal = () => {
       return await executeCommand(createFileOrDirectory, argumentsString, 'cr');
     },
     cat: async (filePath: string) => {
-      return await executeCommand(showFileContent, filePath, 'cat');
+      const log = await executeCommand(showFileContent, filePath, 'cat');
+      console.log("log: ", log);
+      return log;
+    },
+    ln: async (argumentsString: string) => {
+      return await executeCommand(createSymLink, argumentsString, 'ln');
     },
     up: async (argumentsString: string) => {
       return await executeCommand(updateFileDirectory, argumentsString, 'up');

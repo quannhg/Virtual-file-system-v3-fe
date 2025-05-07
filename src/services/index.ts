@@ -5,6 +5,7 @@
 export * from './changeDirectory.service';
 export * from './common';
 export * from './createFileDirectory.service';
+export * from './createSymlink.service';
 export * from './findFileDirectory.service';
 export * from './listDirectoryItems.service';
 export * from './moveFileDirectory.service';

@@ -50,6 +50,12 @@ export const HelpCommand: React.FC = () => {
         </li>
         <li>
           <strong>
+            <span className='text-blue-300'>ln</span> [-p] PATH TARGET_PATH:
+          </strong>{' '}
+          Create a new file or directory that symlink to specified targetPath.
+        </li>
+        <li>
+          <strong>
             <span className='text-blue-300'>rm</span> PATH [PATH2 PATH3...]:
           </strong>{' '}
           Remove files/folders at the specified PATH(s).
