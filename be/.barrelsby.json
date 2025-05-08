@@ -1,0 +1,14 @@
+{
+  "directory": [
+    "./src/handlers",
+    "./src/constants",
+    "./src/dtos/in",
+    "./src/dtos/out",
+    "./src/configs",
+    "./src/interfaces",
+    "./src/repositories",
+    "./src/utils"
+  ],
+  "exclude": ["__mock__", "__mocks__", ".spec.ts", "__tests__", ".test.ts"],
+  "delete": true
+}

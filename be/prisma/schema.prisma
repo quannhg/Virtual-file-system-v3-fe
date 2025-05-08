@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("MYSQL_URL")
+  relationMode = "foreignKeys"
+}
+
+model File {
+  path      String   @id
+  name      String
+  type      FileType
+  createdAt DateTime @default(now())
+  size      Int?
+  Content   Content[]
+
+  @@index([path])
+}
+
+model Content {
+  path String @id
+  data String
+  file File   @relation(fields: [path], references: [path])
+
+  @@index([path])
+}
+
+enum FileType {
+  RAW_FILE
+  DIRECTORY
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}

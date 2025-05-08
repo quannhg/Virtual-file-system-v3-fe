@@ -1,0 +1,10 @@
+{
+  "directory": [
+    "./src/components",
+    "./src/states",
+    "./src/utils",
+    "./src/services",
+    "./src/handlers"
+  ],
+  "delete": true
+}

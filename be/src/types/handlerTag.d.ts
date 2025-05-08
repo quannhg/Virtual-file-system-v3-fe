@@ -1,0 +1,1 @@
+type HandlerTag = 'Api';
