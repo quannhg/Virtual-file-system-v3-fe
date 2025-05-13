@@ -1,51 +1,26 @@
+// useGrepFile.ts
 import { grepFile } from '@services';
 import { usePwdStore } from '@states';
 import { extractArguments, inferPath, normalizePath, removeQuotes } from '@utils';
 
-type FindResult = {
-  keyString: string;
-  matchingPaths: string[];
-};
-
 export const useGrepFile = (): ((
   argumentString: string
-) => Promise<{ keyString: string; matchingPaths: string[] }>) => {
+) => Promise<{ matchingResults: { path: string; content: string }[] }>) => {
   const { currentDirectory } = usePwdStore();
 
   return async (argumentString: string) => {
-    const { keyString, findPath } = parseArguments(argumentString);
+    const args = extractArguments(argumentString);
 
-    const targetDirectory = inferPath(currentDirectory, findPath || '');
+    if (!args?.length) throw new Error('Invalid arguments\nUsage: grep CONTENT [FOLDER_PATH]');
 
-    const matchingPaths = await grepFile(keyString, targetDirectory);
+    const contentSearch = removeQuotes(args.shift()!);
+    const folderPath = normalizePath(args.shift() || '') || '/';
 
-    if (!Array.isArray(matchingPaths)) {
-      throw new Error('Invalid response from server: expected an array');
-    }
+    if (args.length > 0) throw new Error('Invalid arguments\nUsage: grep CONTENT [FOLDER_PATH]');
 
-    return {
-      keyString,
-      matchingPaths
-    };
+    const fullPath = inferPath(currentDirectory, folderPath);
+    const results = await grepFile(contentSearch, fullPath);
+
+    return { matchingResults: results };
   };
-};
-
-const usage = 'Usage: grep CONTENT [FOLDER_PATH]';
-const invalidDiagnostic = `Invalid arguments\n${usage}`;
-
-const parseArguments = (argumentString: string) => {
-  const args = extractArguments(argumentString);
-
-  if (!args?.length) {
-    throw new Error(invalidDiagnostic);
-  }
-
-  const keyString = removeQuotes(args.shift()!);
-  const findPath = normalizePath(args.shift() || '') || null;
-
-  if (args.length > 0) {
-    throw new Error(invalidDiagnostic);
-  }
-
-  return { keyString, findPath };
 };

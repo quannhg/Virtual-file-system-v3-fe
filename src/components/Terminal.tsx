@@ -87,22 +87,21 @@ export const Terminal = () => {
       return <CommandError error={err} />;
     }
   };
-  const grepFile = useGrepFile(); // ✅ gọi ở đúng vị trí
+  const grepFile = useGrepFile();
 
   const grep = async (argumentString: string) => {
     try {
       if (argumentString === '--help' || argumentString === '-h') {
-        return <HelpForSpecificCommand command={'grep'} />;
+        return <HelpForSpecificCommand command='grep' />;
       }
 
-      const result = await grepFile(argumentString); // ✅ dùng như thường
-      return (
-        <GrepFileCommandResult keyString={result.keyString} matchingPaths={result.matchingPaths} />
-      );
+      const result = await grepFile(argumentString);
+      return <GrepFileCommandResult matchingResults={result.matchingResults} />;
     } catch (err) {
       return <CommandError error={err} />;
     }
   };
+
   const commands: Commands = {
     cd: async (directory: string) => {
       return await executeCommand(changeDirectory, directory, 'cd');

@@ -1,23 +1,24 @@
+// grepFile.service.ts
 import { apiClient } from './common';
 
+type GrepResult = {
+  path: string;
+  content: string;
+};
+
 export async function grepFile(
-  keyString: string,
-  path: string,
-  contentSearch?: string
-): Promise<string[]> {
+  contentSearch: string,
+  path: string
+): Promise<GrepResult[]> {
   const { data, error } = await apiClient.GET('/api/grep', {
     params: {
       query: {
-        keyString,
-        path,
-        ...(contentSearch ? { contentSearch } : {})
+        contentSearch,
+        path
       }
     }
   });
 
-  if (error) {
-    throw new Error(error.message);
-  }
-
+  if (error) throw new Error(error.message);
   return data;
 }
