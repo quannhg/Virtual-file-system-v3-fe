@@ -96,7 +96,12 @@ export const Terminal = () => {
       }
 
       const result = await grepFile(argumentString);
-      return <GrepFileCommandResult matchingResults={result.matchingResults} />;
+      return (
+        <GrepFileCommandResult
+          matchingResults={result.matchingResults}
+          contentSearch={result.contentSearch} // 👈 Thêm dòng này
+        />
+      );
     } catch (err) {
       return <CommandError error={err} />;
     }

@@ -89,6 +89,7 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
       <div>
         <strong>
           <span className='text-blue-300'>grep</span> CONTENT [FOLDER_PATH]
+          [--recursive|--no-recursive]
         </strong>
         <p className='mt-4'>
           Search for files whose <strong>content</strong> contains the keyword <code>CONTENT</code>.
@@ -96,16 +97,20 @@ export const HelpForSpecificCommand: React.FC<{ command?: string }> = ({ command
           <br />
           <strong>Rules:</strong>
           <ul>
-            <li>CONTENT is required and must be wrapped in quotes if it contains spaces.</li>
-            <li>
-              If <code>FOLDER_PATH</code> is provided, the search is limited to that directory (and
-              its subdirectories).
-            </li>
-            <li>
-              If <code>FOLDER_PATH</code> is omitted, the current working directory is used.
-            </li>
+            <ul>
+              <li>CONTENT is required and must be wrapped in quotes if it contains spaces.</li>
+              <li>If FOLDER_PATH is omitted, current working directory is used.</li>
+              <li>
+                <strong>By default</strong>, the search is recursive (searches subdirectories).
+              </li>
+              <li>
+                Use <code>--no-recursive</code> to restrict search to current folder only.
+              </li>
+            </ul>
           </ul>
-          <strong>Example:</strong> grep "hello world" /example/folder
+          <strong>Example:</strong>
+          <br />
+          <code>grep "hello world" /example/folder --no-recursive</code>
         </p>
       </div>
     ),

@@ -8,13 +8,15 @@ type GrepResult = {
 
 export async function grepFile(
   contentSearch: string,
-  path: string
+  path: string,
+  recursive: boolean = true  // 👈 Thêm tham số mới
 ): Promise<GrepResult[]> {
   const { data, error } = await apiClient.GET('/api/grep', {
     params: {
       query: {
         contentSearch,
-        path
+        path,
+        recursive: recursive ? 'true' : 'false'  // 👈 Gửi dưới dạng string
       }
     }
   });

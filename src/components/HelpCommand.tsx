@@ -38,9 +38,11 @@ export const HelpCommand: React.FC = () => {
         </li>
         <li>
           <strong>
-            <span className='text-blue-300'>grep</span> "CONTENT" [FOLDER_PATH]:
+            <span className='text-blue-300'>grep</span> "CONTENT" [FOLDER_PATH]
+            [--recursive|--no-recursive]:
           </strong>{' '}
           Search all files whose content contains the substring CONTENT.
+          If omitted, the search is recursive by default.
         </li>
         <li>
           <strong>
