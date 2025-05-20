@@ -7,6 +7,7 @@ export * from './common';
 export * from './createFileDirectory.service';
 export * from './createSymlink.service';
 export * from './findFileDirectory.service';
+export * from './grepFile.service';
 export * from './listDirectoryItems.service';
 export * from './moveFileDirectory.service';
 export * from './removeFileDirectory.service';

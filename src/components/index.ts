@@ -5,6 +5,7 @@
 export * from './CommandError';
 export * from './FindFileDirectory';
 export * from './GeneralCommandResult';
+export * from './GrepFileCommandResult';
 export * from './HelpCommand';
 export * from './HelpForSpecificCommand';
 export * from './ListDirectoryItems';

@@ -6,6 +6,7 @@ export * from './useChangeDirectory';
 export * from './useCreateFileDirectory';
 export * from './useCreateSymlink';
 export * from './useFindListDirectory';
+export * from './useGrepFile';
 export * from './useListDirectoryItems';
 export * from './useMoveFileDirectory';
 export * from './useRemoveFileDirectory';
