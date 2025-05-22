@@ -1,11 +1,12 @@
 import { logger } from '@configs';
+import { redisConfig } from '@configs/redis';
 import { DIRECTORY_NOT_FOUND, PATH_IS_REQUIRED } from '@constants';
 import { PathQueryStrings } from '@dtos/in';
 import { ListDirectoryItem } from '@dtos/out';
 import { Handler } from '@interfaces';
 import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
-import { getLastSegment, normalizePath } from '@utils';
+import { getLastSegment, normalizePath, getCache, setCache, cacheKeys } from '@utils';
 import moment from 'moment';
 
 const extractDirectItemPaths = (items: ItemWithContent[], path: string): Set<string> => {
@@ -34,6 +35,15 @@ export const listDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Pat
     const path = normalizeResult.path + '/';
 
     try {
+        // Try to get from cache first
+        const cacheKey = cacheKeys.directoryListing(path.slice(0, -1));
+        const cachedListing = await getCache<ListDirectoryItem[]>(cacheKey);
+
+        if (cachedListing) {
+            return res.send(cachedListing);
+        }
+
+        // If not in cache, proceed with database queries
         const exactFile = await prisma.file.findFirst({
             where: {
                 path: path.slice(0, -1),
@@ -61,7 +71,11 @@ export const listDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Pat
                 path: true,
                 createdAt: true,
                 type: true,
-                Content: true
+                content: {
+                    select: {
+                        data: true
+                    }
+                }
             }
         });
 
@@ -75,7 +89,11 @@ export const listDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Pat
                 select: {
                     path: true,
                     createdAt: true,
-                    Content: { select: { data: true } }
+                    content: {
+                        select: {
+                            data: true
+                        }
+                    }
                 }
             });
 
@@ -85,28 +103,55 @@ export const listDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Pat
                 result.push({
                     name: itemName,
                     createAt: moment(directFile.createdAt).toString(),
-                    size: directFile.Content.length > 0 ? directFile.Content[0].data.length : 0
-                });
-            } else {
-                const folderSizeResult: { size: string }[] =
-                    await prisma.$queryRaw`SELECT SUM(CHAR_LENGTH(data)) AS size FROM Content WHERE path LIKE CONCAT(${itemPath}, '/', '%')`;
-
-                const firstFolderItem = await prisma.file.findFirst({
-                    where: {
-                        path: { startsWith: itemPath },
-                        type: FileType.DIRECTORY
-                    },
-                    orderBy: { createdAt: 'asc' }
+                    type: FileType.RAW_FILE,
+                    size: directFile.content && directFile.content.data ? directFile.content.data.length : 0
                 });
 
-                result.push({
-                    name: itemName + '/',
-                    createAt: (firstFolderItem && moment(firstFolderItem.createdAt).toString()) || '0',
-                    size: Number(folderSizeResult[0]?.size) || 0
-                });
+                continue;
             }
+
+            //symlink
+            const symlinkFile = await prisma.file.findFirst({
+                where: { path: itemPath, type: FileType.SYMLINK },
+                select: {
+                    createdAt: true,
+                    targetPath: true
+                }
+            });
+
+            if (symlinkFile) {
+                result.push({
+                    name: itemName + ' → ' + symlinkFile.targetPath,
+                    type: FileType.SYMLINK,
+                    createAt: moment(symlinkFile.createdAt).toString(),
+                    size: 0
+                });
+
+                continue;
+            }
+
+            // directory
+            const folderSizeResult: { size: string }[] =
+                await prisma.$queryRaw`SELECT SUM(CHAR_LENGTH(data)) AS size FROM Content WHERE path LIKE CONCAT(${itemPath}, '/', '%')`;
+
+            const firstFolderItem = await prisma.file.findFirst({
+                where: {
+                    path: { startsWith: itemPath },
+                    type: FileType.DIRECTORY
+                },
+                orderBy: { createdAt: 'asc' }
+            });
+
+            result.push({
+                name: itemName + '/',
+                type: FileType.DIRECTORY,
+                createAt: (firstFolderItem && moment(firstFolderItem.createdAt).toString()) || '0',
+                size: Number(folderSizeResult[0]?.size) || 0
+            });
         }
 
+        // Cache the result before returning
+        await setCache(cacheKey, result, redisConfig.ttl.directoryListing);
         return res.send(result);
     } catch (err) {
         logger.error(err);

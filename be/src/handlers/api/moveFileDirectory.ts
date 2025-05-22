@@ -4,7 +4,7 @@ import { SingleMessageResult } from '@dtos/out';
 import { Handler } from '@interfaces';
 import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
-import { normalizePath, getLastSegment } from '@utils';
+import { normalizePath, getLastSegment, invalidateDirectoryCache, invalidateFileCache } from '@utils';
 import { appendPath } from 'src/utils/appendPath';
 import { checkExistingPath } from 'src/utils/checkExistingPath';
 
@@ -96,6 +96,20 @@ export const moveFileDirectory: Handler<SingleMessageResult, { Body: MoveFileDir
                 await createEmptyParent;
             }
         });
+
+        // Invalidate cache for both source and destination directories
+        const oldParentPath = oldPath.split('/').slice(0, -1).join('/');
+        const destinationParentPath = destinationPath;
+
+        await invalidateDirectoryCache(oldParentPath);
+        await invalidateDirectoryCache(destinationParentPath);
+
+        // If the moved item was a file, invalidate its content cache at both old and new locations
+        const movedFile = movedItems.find(item => item.type === FileType.RAW_FILE && item.path === oldPath);
+        if (movedFile) {
+            await invalidateFileCache(oldPath);
+            await invalidateFileCache(newPath);
+        }
 
         return res.send({ message: `Successfully moved ${oldPath} to ${destinationPath}` });
     } catch (err) {

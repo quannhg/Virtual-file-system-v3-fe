@@ -2,8 +2,16 @@ import { logger } from '@configs';
 import { RemoveFileDirectory } from '@dtos/in';
 import { SingleMessageResult } from '@dtos/out';
 import { Handler } from '@interfaces';
+import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
-import { removeItem, getLastSegment, normalizePath } from '@utils';
+import {
+    removeItem,
+    getLastSegment,
+    normalizePath,
+    invalidateDirectoryCache,
+    invalidateFileCache,
+    getParentPath
+} from '@utils';
 
 export const removeFileDirectory: Handler<SingleMessageResult, { Querystring: RemoveFileDirectory }> = async (req, res) => {
     try {
@@ -25,12 +33,30 @@ export const removeFileDirectory: Handler<SingleMessageResult, { Querystring: Re
             const firstRemoveItem = await prisma.file.findFirst({
                 where: {
                     OR: [{ path: { startsWith: removePath + '/' } }, { path: removePath }]
+                },
+                select: {
+                    path: true,
+                    type: true
                 }
             });
             if (!firstRemoveItem) {
                 errorMessages.push(`Cannot remove ${getLastSegment(rawPath)}: File/directory not found`);
                 continue;
             }
+
+            // Get the parent path for cache invalidation
+            const parentPath = getParentPath(removePath);
+
+            // Check if it's a file to invalidate file content cache
+            if (firstRemoveItem.type === FileType.RAW_FILE) {
+                await invalidateFileCache(removePath);
+            }
+
+            // Invalidate directory listing cache for the parent directory
+            await invalidateDirectoryCache(parentPath);
+
+            // If it's a directory, we need to invalidate all potential file content caches
+            // within this directory, but this is handled by the removeItem function
 
             await removeItem(removePath);
         }

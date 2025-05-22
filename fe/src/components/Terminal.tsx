@@ -6,7 +6,9 @@ import {
   useShowFileContent,
   useUpdateFileOrDirectory,
   useMoveFileDirectory,
-  useFindFileDirectory
+  useFindFileDirectory,
+  useCreateSymlink,
+  useGrepFile
 } from '@handlers';
 import { usePwdStore } from '@states';
 import { ReactTerminal } from 'react-terminal';
@@ -16,7 +18,7 @@ import { CommandError } from './CommandError';
 import { HelpCommand } from './HelpCommand';
 import { HelpForSpecificCommand } from './HelpForSpecificCommand';
 import { FindFileDirectoryCommandResult } from './FindFileDirectory';
-
+import { GrepFileCommandResult } from './GrepFileCommandResult';
 const executeCommand = async (
   commandFunction: (argumentsString: string) => Promise<void | string>,
   argumentsString: string,
@@ -38,6 +40,7 @@ const executeCommand = async (
 export const Terminal = () => {
   const { currentDirectory } = usePwdStore();
 
+  const createSymLink = useCreateSymlink();
   const changeDirectory = useChangeDirectory();
   const createFileOrDirectory = useCreateFileOrDirectory();
   const showFileContent = useShowFileContent();
@@ -84,7 +87,24 @@ export const Terminal = () => {
       return <CommandError error={err} />;
     }
   };
+  const grepFile = useGrepFile();
+  const grep = async (argumentString: string) => {
+    try {
+      if (argumentString === '--help' || argumentString === '-h') {
+        return <HelpForSpecificCommand command='grep' />;
+      }
 
+      const result = await grepFile(argumentString);
+      return (
+        <GrepFileCommandResult
+          matchingResults={result.matchingResults}
+          contentSearch={result.contentSearch} // 👈 Thêm dòng này
+        />
+      );
+    } catch (err) {
+      return <CommandError error={err} />;
+    }
+  };
   const commands: Commands = {
     cd: async (directory: string) => {
       return await executeCommand(changeDirectory, directory, 'cd');
@@ -93,13 +113,19 @@ export const Terminal = () => {
       return await executeCommand(createFileOrDirectory, argumentsString, 'cr');
     },
     cat: async (filePath: string) => {
-      return await executeCommand(showFileContent, filePath, 'cat');
+      const log = await executeCommand(showFileContent, filePath, 'cat');
+      console.log('log: ', log);
+      return log;
+    },
+    ln: async (argumentsString: string) => {
+      return await executeCommand(createSymLink, argumentsString, 'ln');
     },
     up: async (argumentsString: string) => {
       return await executeCommand(updateFileDirectory, argumentsString, 'up');
     },
     ls,
     find,
+    grep,
     mv: async (argumentsString: string) => {
       return await executeCommand(moveFileDirectory, argumentsString, 'mv');
     },

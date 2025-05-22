@@ -1,8 +1,9 @@
 -- CreateTable
 CREATE TABLE `File` (
     `path` VARCHAR(191) NOT NULL,
-    `type` ENUM('RAW_FILE', 'DIRECTORY') NOT NULL,
+    `type` ENUM('RAW_FILE', 'DIRECTORY', 'SYMLINK') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `targetPath` VARCHAR(191) NULL,
 
     INDEX `File_path_idx`(`path`),
     PRIMARY KEY (`path`)

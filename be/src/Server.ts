@@ -1,5 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 import { envs, logger, swaggerConfig, swaggerUIConfig } from '@configs';
+import { redisConfig } from '@configs/redis';
 import { customErrorHandler } from '@handlers';
 import { apiRoute } from './routes/api';
 
@@ -14,6 +15,15 @@ export function createServer(config: ServerConfig): FastifyInstance {
     app.register(import('@fastify/cors'), {
         origin: envs.CORS_WHITE_LIST,
         credentials: true
+    });
+
+    // Register Redis plugin
+    app.register(import('@fastify/redis'), {
+        host: redisConfig.host,
+        port: redisConfig.port,
+        password: redisConfig.password,
+        db: redisConfig.db,
+        keyPrefix: redisConfig.keyPrefix
     });
 
     if (envs.NODE_ENV === 'development' || envs.NODE_ENV === 'staging') {

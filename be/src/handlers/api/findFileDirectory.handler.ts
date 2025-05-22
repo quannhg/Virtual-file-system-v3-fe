@@ -2,12 +2,27 @@ import { logger } from '@configs';
 import { DIRECTORY_NOT_FOUND, PATH_IS_REQUIRED } from '@constants';
 import { FindFileDirectoryQueryStrings } from '@dtos/in';
 import { Handler } from '@interfaces';
+import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
-import { normalizePath } from '@utils';
-import { ListDirectoryItem } from '@dtos/out';
+import { getParentPath, normalizePath } from '@utils';
 
-export const findDirectoryItems: Handler<ListDirectoryItem[], { Querystring: FindFileDirectoryQueryStrings }> = async (req, res) => {
-    const { keyString, path: rawPath, contentSearch } = req.query;
+const extractMatchingPaths = (item: SimpleItem, keyString: string): string[] => {
+    const pathParts = item.path.split('/');
+    let currentPath = '';
+    const matchingPaths = [];
+    for (const part of pathParts) {
+        currentPath += '/' + part;
+        if (part.includes(keyString)) {
+            if (item.type === 'RAW_FILE' && currentPath.length === item.path.length + 1) matchingPaths.push(currentPath);
+            else matchingPaths.push(currentPath + '/');
+        }
+    }
+
+    return matchingPaths;
+};
+
+export const findDirectoryItems: Handler<string[], { Querystring: FindFileDirectoryQueryStrings }> = async (req, res) => {
+    const { keyString, path: rawPath } = req.query;
 
     if (!rawPath) {
         return res.unprocessableEntity(PATH_IS_REQUIRED);
@@ -23,7 +38,7 @@ export const findDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Fin
         const exactFile = await prisma.file.findFirst({
             where: {
                 path: path.slice(0, -1),
-                type: 'RAW_FILE'
+                type: FileType.RAW_FILE
             }
         });
         if (exactFile) {
@@ -32,53 +47,37 @@ export const findDirectoryItems: Handler<ListDirectoryItem[], { Querystring: Fin
 
         const folderExist = await prisma.file.findFirst({
             where: {
-                OR: [{ path: path.slice(0, -1), type: 'DIRECTORY' }, { path: { startsWith: path } }]
+                OR: [{ path: path.slice(0, -1), type: FileType.DIRECTORY }, { path: { startsWith: path } }]
             }
         });
         if (!folderExist) {
             return res.status(400).send({ message: DIRECTORY_NOT_FOUND });
         }
 
-        // Nested query: Lấy tất cả file trong thư mục
-        const filesInDirectory = await prisma.file.findMany({
+        const matchingItems = await prisma.file.findMany({
             where: {
-                path: { startsWith: path },
-                type: 'RAW_FILE'
-            },
-            select: { path: true } // Chỉ cần path để xác định file
-        });
-
-        // Composite condition: Tìm file có nội dung (trong Content) chứa contentSearch hoặc keyString
-        const matchingFiles = await prisma.file.findMany({
-            where: {
-                path: { in: filesInDirectory.map((f) => f.path) }, // Nested query
-                type: 'RAW_FILE',
-                OR: [
-                    {
-                        Content: {
-                            some: {
-                                data: { contains: contentSearch || keyString }
-                            }
-                        }
-                    },
-                    { name: { contains: keyString } }
-                ]
+                path: {
+                    startsWith: path,
+                    contains: keyString
+                }
             },
             select: {
-                name: true,
-                createdAt: true,
-                size: true
+                path: true,
+                type: true
             }
         });
 
-        // Trả về danh sách file
-        return res.send(
-            matchingFiles.map((file) => ({
-                name: file.name,
-                createdAt: file.createdAt.toISOString(),
-                size: file.size || 0
-            }))
-        );
+        const matchingPaths = new Set<string>();
+
+        matchingItems.forEach((item) => {
+            const currentMatchingPaths = extractMatchingPaths(
+                { ...item, path: item.path.slice(getParentPath(path).length + 1) },
+                keyString
+            );
+            currentMatchingPaths.forEach((matchingPath) => matchingPaths.add(matchingPath));
+        });
+
+        return res.send(Array.from(matchingPaths).sort());
     } catch (err) {
         logger.error(err);
         return res.internalServerError();

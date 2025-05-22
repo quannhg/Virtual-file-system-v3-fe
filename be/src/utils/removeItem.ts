@@ -1,5 +1,6 @@
 import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
+import { invalidateDirectoryCache, invalidateFileCache } from './cache';
 
 export const removeItem = async (removePath: string) => {
     try {
@@ -34,8 +35,14 @@ export const removeItem = async (removePath: string) => {
                     await createEmptyParent;
                 }
             });
+
+            // Invalidate cache for the removed item and its parent directory
+            await invalidateFileCache(removePath);
+            await invalidateDirectoryCache(parentPath);
         }
     } catch (error) {
+        // Log the error before rethrowing
+        console.error('Error removing item:', error);
         throw error;
     }
 };

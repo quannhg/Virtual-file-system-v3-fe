@@ -7,8 +7,8 @@ export const useListDirectoryItems = (): ((
 ) => Promise<ListDirectoryItem[]>) => {
   const { currentDirectory } = usePwdStore();
 
-  return async (argumentsString: string | undefined) => {
-    const args = extractArguments(argumentsString || '');
+  return async (directory: string | undefined) => {
+    const args = extractArguments(directory || '');
 
     if (!args) {
       throw Error('Invalid arguments\nUsage: ls [FOLDER_PATH]');
@@ -22,6 +22,13 @@ export const useListDirectoryItems = (): ((
 
     const targetDirectory = inferPath(currentDirectory, folderPath);
 
-    return await listDirectoryItems(targetDirectory);
+    // Đảm bảo kết quả trả về có trường type
+    const items = await listDirectoryItems(targetDirectory);
+    return items.map(item => ({
+      type: item.type, // hoặc xác định type dựa trên logic của ứng dụng
+      name: item.name,
+      createAt: item.createAt,
+      size: item.size
+    }));
   };
 };

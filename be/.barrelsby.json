@@ -7,6 +7,7 @@
     "./src/configs",
     "./src/interfaces",
     "./src/repositories",
+    "./src/services",
     "./src/utils"
   ],
   "exclude": ["__mock__", "__mocks__", ".spec.ts", "__tests__", ".test.ts"],

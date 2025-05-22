@@ -5,7 +5,7 @@ import { SingleMessageResult } from '@dtos/out';
 import { Handler } from '@interfaces';
 import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
-import { normalizePath } from '@utils';
+import { normalizePath, invalidateFileCache, invalidateDirectoryCache, deleteCache, cacheKeys, getParentPath } from '@utils';
 import path from 'path';
 import { appendPath } from 'src/utils/appendPath';
 import { checkExistingPath } from 'src/utils/checkExistingPath';
@@ -59,6 +59,7 @@ export const updateFileDirectory: Handler<SingleMessageResult, { Body: UpdateFil
             }
 
             await prisma.$transaction(async (prisma) => {
+                // Update the file path
                 await prisma.file.update({
                     where: {
                         path: oldPath
@@ -68,6 +69,7 @@ export const updateFileDirectory: Handler<SingleMessageResult, { Body: UpdateFil
                     }
                 });
 
+                // Update the content
                 await prisma.content.upsert({
                     where: {
                         path: newPath
@@ -80,9 +82,22 @@ export const updateFileDirectory: Handler<SingleMessageResult, { Body: UpdateFil
                         data: newData
                     }
                 });
+
+                // Update all symlinks pointing to this file
+                await updateSymlinksPointingTo(prisma, oldPath, newPath);
             });
 
-            return res.send({ message: 'Successfully updated file' });
+            // Invalidate cache for both old and new paths
+            await invalidateFileCache(oldPath);
+            await invalidateFileCache(newPath);
+            await invalidateDirectoryCache(path.dirname(oldPath));
+            await invalidateDirectoryCache(path.dirname(newPath));
+
+            // Invalidate cache for the parent directory to ensure ls shows the new file/directory
+            const parentPath = getParentPath(newPath);
+            await invalidateDirectoryCache(parentPath);
+
+            return res.send({ message: 'Successfully updated file and symlinks' });
         } else {
             const updateItems = await prisma.file.findMany({
                 where: {
@@ -103,23 +118,75 @@ export const updateFileDirectory: Handler<SingleMessageResult, { Body: UpdateFil
                 return res.badRequest(`File or directory already exists at path: ${existingPath}`);
             }
 
-            for (let i = 0; i < updateItems.length; i++) {
-                const item = updateItems[i];
-                const absoluteNewPath = appendPath(newPath, item.path.slice(oldPath.length, item.path.length));
+            await prisma.$transaction(async (prisma) => {
+                for (const item of updateItems) {
+                    const absoluteNewPath = appendPath(newPath, item.path.slice(oldPath.length, item.path.length));
 
-                await prisma.file.update({
-                    where: {
-                        path: item.path
-                    },
-                    data: {
-                        path: absoluteNewPath
+                    // Update the file path
+                    await prisma.file.update({
+                        where: {
+                            path: item.path
+                        },
+                        data: {
+                            path: absoluteNewPath
+                        }
+                    });
+
+                    // If this is a regular file or directory (not a symlink itself)
+                    // update any symlinks pointing to it
+                    if (item.type !== FileType.SYMLINK) {
+                        await updateSymlinksPointingTo(prisma, item.path, absoluteNewPath);
                     }
-                });
-            }
-            return res.send({ message: 'Successfully updated file/directory' });
+
+                    // Invalidate cache for each updated path
+                    await invalidateFileCache(item.path);
+                    await invalidateFileCache(absoluteNewPath);
+                    await invalidateDirectoryCache(path.dirname(item.path));
+                    await invalidateDirectoryCache(path.dirname(absoluteNewPath));
+
+                    // Invalidate cache for the parent directory to ensure ls shows the new file/directory
+                    const parentPath = getParentPath(absoluteNewPath);
+                    await invalidateDirectoryCache(parentPath);
+                }
+            });
+
+            return res.send({ message: 'Successfully updated file/directory and symlinks' });
         }
     } catch (err) {
         logger.error(err);
         return res.internalServerError();
     }
 };
+
+/**
+ * Updates all symlinks that point to the old path to point to the new path
+ *
+ * @param prismaClient - Prisma client transaction instance
+ * @param oldTargetPath - The old path that symlinks are pointing to
+ * @param newTargetPath - The new path that symlinks should point to
+ */
+async function updateSymlinksPointingTo(prismaClient: any, oldTargetPath: string, newTargetPath: string) {
+    // Find all symlinks that point to the old path
+    const symlinks = await prismaClient.file.findMany({
+        where: {
+            type: FileType.SYMLINK,
+            targetPath: oldTargetPath
+        }
+    });
+
+    // Update each symlink to point to the new path
+    for (const symlink of symlinks) {
+        await prismaClient.file.update({
+            where: {
+                path: symlink.path
+            },
+            data: {
+                targetPath: newTargetPath
+            }
+        });
+
+        logger.info(`Updated symlink ${symlink.path} to point to ${newTargetPath}`);
+    }
+
+    return symlinks.length;
+}

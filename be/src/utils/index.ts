@@ -3,9 +3,13 @@
  */
 
 export * from './appendPath';
+export * from './cache';
 export * from './checkExistingPath';
 export * from './createRoute';
 export * from './getLastSegment';
 export * from './getParentPath';
 export * from './normalizePath';
 export * from './removeItem';
+export * from './resolveFullPath';
+export * from './resolveSymlink';
+export * from './resolveSymlinkRecursively';

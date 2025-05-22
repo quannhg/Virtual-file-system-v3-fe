@@ -1,12 +1,16 @@
 import {
     changeDirectory,
     createFileDirectory,
+    createSymLinkItems,
     findDirectoryItems,
+    getCacheStats,
     listDirectoryItems,
     moveFileDirectory,
     removeFileDirectory,
+    resetCacheStats,
     showFileContent,
-    updateFileDirectory
+    updateFileDirectory,
+    grepFiles
 } from '@handlers';
 import {
     PathQueryStrings,
@@ -14,12 +18,21 @@ import {
     UpdateFileDirectoryBody,
     RemoveFileDirectory,
     MoveFileDirectoryBody,
-    FindFileDirectoryQueryStrings
+    FindFileDirectoryQueryStrings,
+    GrepFileQueryStrings
 } from '@dtos/in';
 import { createRoute } from '@utils';
 import { Type } from '@sinclair/typebox';
 import { DIRECTORY_NOT_FOUND, FILE_NOT_FOUND } from '@constants';
-import { SingleMessageResult, CreateFileDirectoryResult, ShowFileContentResult, ListDirectoryItem } from '@dtos/out';
+import {
+    CacheStatsResult,
+    CreateFileDirectoryResult,
+    ListDirectoryItem,
+    ResetCacheStatsResult,
+    ShowFileContentResult,
+    SingleMessageResult,
+    GrepFileResult
+} from '@dtos/out';
 
 export const apiRoute = createRoute('Api', [
     {
@@ -75,6 +88,36 @@ export const apiRoute = createRoute('Api', [
         handler: listDirectoryItems
     },
     {
+        method: 'POST',
+        url: '/ln',
+        schema: {
+            summary: 'Create symbolic link',
+            body: Type.Object({
+                targetPath: Type.String(),
+                path: Type.String(),
+                shouldCreateParent: Type.Optional(Type.Boolean({ default: false }))
+            }),
+            response: {
+                200: SingleMessageResult,
+                400: Type.Object({ message: Type.String() })
+            }
+        },
+        handler: createSymLinkItems
+    },
+    {
+        method: 'GET',
+        url: '/find',
+        schema: {
+            summary: 'Find all items in directory',
+            querystring: FindFileDirectoryQueryStrings,
+            response: {
+                200: Type.Array(Type.String()),
+                400: Type.Object({ message: Type.String({ default: DIRECTORY_NOT_FOUND }) })
+            }
+        },
+        handler: findDirectoryItems
+    },
+    {
         method: 'PUT',
         url: '/up',
         schema: {
@@ -115,15 +158,39 @@ export const apiRoute = createRoute('Api', [
     },
     {
         method: 'GET',
-        url: '/find',
+        url: '/cache/stats',
         schema: {
-            summary: 'Find all items in directory by name or content',
-            querystring: FindFileDirectoryQueryStrings,
+            summary: 'Get cache statistics',
             response: {
-                200: Type.Array(ListDirectoryItem),
+                200: CacheStatsResult,
+                500: Type.Object({ message: Type.String() })
+            }
+        },
+        handler: getCacheStats
+    },
+    {
+        method: 'POST',
+        url: '/cache/reset',
+        schema: {
+            summary: 'Reset cache statistics',
+            response: {
+                200: ResetCacheStatsResult,
+                500: Type.Object({ message: Type.String() })
+            }
+        },
+        handler: resetCacheStats
+    },
+    {
+        method: 'GET',
+        url: '/grep',
+        schema: {
+            summary: 'Search files by content and path',
+            querystring: GrepFileQueryStrings,
+            response: {
+                200: Type.Array(GrepFileResult), // ✅ Sửa thành DTO bạn đã định nghĩa
                 400: Type.Object({ message: Type.String({ default: DIRECTORY_NOT_FOUND }) })
             }
         },
-        handler: findDirectoryItems
+        handler: grepFiles
     }
 ]);

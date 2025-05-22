@@ -4,7 +4,9 @@
 
 export * from './createFileDirectory.dto';
 export * from './findFileDirectory.dto';
+export * from './grepFile.dto';
 export * from './moveFileDirectory.dto';
 export * from './pathQueryString.dto';
 export * from './removeFileDirectory.tos';
+export * from './symbolLink.dto';
 export * from './updateFileDirectory.dto';

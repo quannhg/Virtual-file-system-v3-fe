@@ -1,6 +1,7 @@
 import { InvalidPathResult, ValidPathResult } from '@interfaces';
 import { FileType } from '@prisma/client';
 import { prisma } from '@repositories';
+import { resolveFullPath } from './resolveFullPath';
 
 export async function normalizePath(path: string, isFilePath?: boolean): Promise<ValidPathResult | InvalidPathResult> {
     if (path.endsWith('/')) {
@@ -33,7 +34,11 @@ export async function normalizePath(path: string, isFilePath?: boolean): Promise
     }
 
     try {
-        const resultPath = (path.startsWith('/') ? '' : '/') + subpaths.map(normalizeSubpath).join('/');
+        const normalizedPath = (path.startsWith('/') ? '' : '/') + subpaths.map(normalizeSubpath).join('/');
+
+        // After normalizing the path, resolve any symlinks in the path
+        const resultPath = await resolveFullPath(normalizedPath);
+
         return { invalid: false, path: resultPath };
     } catch (err) {
         return { invalid: true, message: err.message };

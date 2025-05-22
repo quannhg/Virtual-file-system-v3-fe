@@ -2,6 +2,7 @@ import { usePwdStore } from '@states';
 import { inferPath, extractArguments, normalizePath } from '@utils';
 import { showFileContent } from '@services';
 
+
 export const useShowFileContent = (): ((argumentsString: string) => Promise<string>) => {
   const { currentDirectory } = usePwdStore();
 
