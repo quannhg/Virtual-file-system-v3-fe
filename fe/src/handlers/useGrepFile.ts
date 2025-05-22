@@ -17,7 +17,7 @@ export const useGrepFile = (): ((
     }
 
     const contentSearch = removeQuotes(args.shift()!);
-    let folderPath = '/';
+    let folderPath = currentDirectory;
     let recursive = true;
 
     if (args.length > 0 && !args[0].startsWith('--')) {
